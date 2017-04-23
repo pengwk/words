@@ -115,10 +115,10 @@ def speech_speed(word_count, time):
     return float(word_count)/float(time)
 
 
-def test_word_count():
-
-    from transcript import get_test_transcript,get_clean_transcript
-    import pprint
-    clean_transcript = get_clean_transcript(get_test_transcript())[0]
-    print total_word(clean_transcript)
-    pprint.pprint(word_count(clean_transcript))
+# def test_word_count():
+#
+#     from transcript import get_test_transcript,get_clean_transcript
+#     import pprint
+#     clean_transcript = get_clean_transcript(get_test_transcript())[0]
+#     print total_word(clean_transcript)
+#     pprint.pprint(word_count(clean_transcript))

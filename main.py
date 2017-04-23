@@ -18,171 +18,11 @@ __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
-from transcript import get_clean_transcript
-
-import nltk
-
-debug = False
-
-
-def break_passage():
-    [text, lines] = get_clean_transcript()
-    # todo 提取单词，处理掉句子间的标点
-    print text.split()
-    print get_single_word(text)
-    print len(lines)
-
-
-def get_single_word(text):
-    import nltk
-    pattern = r'''(?x)   # set flag to
-      ([A-Z]\.])+
-    | \w+(-\w+)*
-    | \$?\d+(\.\d+)?%?
-    | \.\.\.
-    | [][.,;"'?():-_`]
-    '''
-    pattern = r'''(?x)          # set flag to allow verbose regexps
-            (?:[A-Z]\.)+        # abbreviations, e.g. U.S.A.
-          | \w+(?:-\w+)*        # words with optional internal hyphens
-          | \$?\d+(?:\.\d+)?%?  # currency and percentages, e.g. $12.40, 82%
-          | \.\.\.              # ellipsis
-          | [][.,;"'?():_`-]    # these are separate tokens; includes ], [
-        '''
-    my_pattern = r'''(?x)          # set flag to allow verbose regexps
-            (?:[A-Z]\.)+        # abbreviations, e.g. U.S.A.
-          | \w+(?:-\w+)*        # words with optional internal hyphens
-          | \$?\d+(?:\.\d+)?%?  # currency and percentages, e.g. $12.40, 82%
-          | \.\.\.              # ellipsis
-          | [][.,;"?():_-]    # these are separate tokens; includes ], [
-        '''
-    return nltk.regexp_tokenize(text, my_pattern)
-
-
-def simple_token(text):
-    # type: (object) -> list
-    """
-    将部分字符替换成空格，按空格分词,
-    :rtype: object
-    :param text:
-    :return: a list contains words, e.g. ['In', 'ok']
-    """
-    _text = text
-    # 中文标点符号的去处
-    punctuations = [',',
-                    '.',
-                    '!',
-                    ';',
-                    '?',
-                    '"',
-                    ]
-
-    for punctuation in punctuations:
-        _text = _text.replace(punctuation, ' ')
-
-    if debug is True:
-        print _text
-        print _text.split()
-
-    return _text.split()
-
-
-def main():
-    return None
-
-
-def ana():
-    # todo 提速 使用多线程，多进程 分析性能的瓶颈
-    from query_api import get_videos
-    debug = True
-    if debug is True:
-        for index, video in enumerate(get_videos()):
-            print index
-            some(video)
-    else:
-        [some(video) for video in get_videos()]
-    return "all be ok!"
-
-
-def some(video):
-    from database import Word, Video, get_or_create
-    from query_api import ses
-    # 一个Video的字幕分析，分析出每一个单词，建立对应的关系
-    # video = session.query(Video)[480]
-    clean_transcript = get_clean_transcript(video.raw_transcript)[0]
-    # 分析出单词
-    words = simple_token(clean_transcript)
-    # 将单词加入数据库
-    # todo 处理大小写 ''.lower() islower() upper()
-    for word in words:
-        if len(word) > 30:
-            print word
-            break
-        word_instance, flag = get_or_create(ses, Word, text=word)
-        ses.commit()
-        #  添加关系
-        video.words.append(word_instance)
-        ses.commit()
-
-    return None
-
-
-# 词频统计
-def word_count(text, is_json=True):
-    """
-
-    :param text:
-    :param is_json:
-    :return:
-    """
-    import json
-    data = {}
-    for word in simple_token(text):
-        if word not in data:
-            data[word] = 1
-        else:
-            data[word] += 1
-    if is_json is True:
-        return json.dumps(data)
-    else:
-        return data
-
-
-def total_word(text):
-    return len(simple_token(text))
-
-
-def speech_speed(word_count, time):
-    """
-
-    :param word_count:
-    :param time:
-    :return:
-    """
-
-    return float(word_count)/float(time)
-
-
-def test_word_count():
-
-    from transcript import get_test_transcript,get_clean_transcript
-    import pprint
-    clean_transcript = get_clean_transcript(get_test_transcript())[0]
-    print total_word(clean_transcript)
-    pprint.pprint(word_count(clean_transcript))
-
-
-
-if __name__ == "__main__":
-    # break_passage()
-    # print simple_token(get_clean_transcript()[0])
-    # ana()
-    test_word_count()
 # 数据库连接
 def create_session():
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
-    eng = create_engine('mysql://root:nopassword@localhost/youtube_videos?charset=utf8', 
+    eng = create_engine('mysql://root:nopassword@localhost/words?charset=utf8',
                         encoding='utf-8')
 
     session = sessionmaker(bind=eng)
@@ -196,9 +36,9 @@ def create_session():
 # 将频道列表中的所有频道完成这一步
 def download_channel_video_list(channel_id):
     # 获取上传列表Id
-    from youtube import get_upload_list_id,get_playlist_items
+    from youtube import get_uploads_list_id,get_playlist_items
 
-    upload_list_id = get_upload_list_id(channel_id)
+    upload_list_id = get_uploads_list_id(channel_id)
     video_id_list = get_playlist_items(upload_list_id)
     # 将上传列表加入数据库
     from models import Video, Playlist
@@ -281,10 +121,11 @@ def download_video_detail(video):
 def download_transcript(video):
     from transcript import download_transcript as dt
     session = create_session()
-    video.xml_transcript = dt.(video.id)
+    video.xml_transcript = dt(video.id)
     session.commit()
     session.close()
     return None
+
 
 # 分析字幕文件 转为text，统计每个视频的词频，建立词与视频的对应关系 
 def analysis_transcript(video):
@@ -298,6 +139,7 @@ def analysis_transcript(video):
     import logging
     logging.basicConfig(filename='example.log',level=logging.DEBUG)
     # 将词汇与视频建立关系，加入数据库
+    from models import Word, get_or_create
     for word in tokens:
         # 记录非全数字，全字母，长度超过15的词
         if len(word) > 15 or not word.isalpha() or not word.isalnum():
@@ -310,7 +152,7 @@ def analysis_transcript(video):
         session.commit()
         #  添加关系
         video.words.append(word_instance)
-        sesssion.commit()    
+        session.commit()
     # 统计词频，总字数，加入数据库，计算语速
     word_number = len(tokens)
     video.word_number = word_number
@@ -378,6 +220,8 @@ def main():
     pool.join()
     print "video_id done"
     # 基本信息
+    from models import Video
+    session = create_session()
     video_list = session.query(Video).all()
     pool = ThreadPool(5)
     result = pool.map(download_video_detail, video_list)
