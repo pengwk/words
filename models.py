@@ -37,9 +37,15 @@ video_word_map_table = Table('video_word_maps', Base.metadata,
                              )
 
 video_playlist_map_table = Table('video_playlist_maps', Base.metadata,
-                             Column('video_id', Integer, ForeignKey('video.id')),
-                             Column('playlist_id', Integer, ForeignKey('playlist.id'))
-                             )
+                                 Column('video_id', Integer, ForeignKey('video.id')),
+                                 Column('playlist_id', Integer, ForeignKey('playlist.id'))
+                                 )
+
+video_tag_map_table = Table('video_tag_maps', Base.metadata,
+                            Column('video_id', Integer, ForeignKey('video.id')),
+                            Column('videotag_id', Integer, ForeignKey('videotag.id'))
+                            )
+
 
 class Video(Base):
     __tablename__ = "video"
@@ -53,7 +59,7 @@ class Video(Base):
     # 通过API获取的原始数据
     xml_transcript = Column(Text)
     # 不包含换行符
-    text_transcript = Column(Text)
+    clean_transcript = Column(Text)
     # todo 视频的字数，句子数，时长，短语，单词
     # 多对多
     words = relationship("Word",
@@ -62,12 +68,12 @@ class Video(Base):
                          backref="videos")
     # 多个视频对应一个channel 多对一
     channel_id = Column(Integer, ForeignKey("channel.id"))
-    channel = relationship('channel', backref="video")
+    channel = relationship('channel', bacdkref="video")
 
     # 一个列表多个视频，一个视频多个列表 多对多
     playlists = relationship("Playlist",
-                            secondary=video_playlist_map_table,
-                            backref="videos")
+                             secondary=video_playlist_map_table,
+                             backref="videos")
 
     # 总单词数
     word_number = Column(Integer)
@@ -77,7 +83,7 @@ class Video(Base):
     speed = Column(String(20))
     # 词频
     word_frequency = Column(JSON)
-    # 标签 多对多
+    # 标签 多d对多
     tags = relationship("VideoTag",
                         secondary=video_tag_map_table,
                         backref="videos")
@@ -95,7 +101,7 @@ class Video(Base):
     license = Column(String(20))
     embedable = Column(Boolean)
     # 播放器url iframe
-    player_url = Column(text)
+    player_url = Column(Text)
     # 统计
     view_count = Column(Integer)
     like_count = Column(Integer)
@@ -103,24 +109,17 @@ class Video(Base):
     favorite_count = Column(Integer)
     comment_count = Column(Integer)
     # 包含的六级单词 一对一关系
-    cet_six_word_set_id = Column(Integer, ForeignKey("CetSixWordSet.id"))
-    cet_six_word_set = relationship("CetSixWordSet", backref="video", uselist=False)
+    cet_six_word_list_id = Column(Integer, ForeignKey("CetSixWordList.id"))
+    cet_six_word_list = relationship("CetSixWordList", backref="video", uselist=False)
 
 
-
-video_tag_map_table = Table('video_tag_maps', Base.metadata,
-                             Column('video_id', Integer, ForeignKey('video.id')),
-                             Column('videotag_id', Integer, ForeignKey('videotag.id'))
-                             )
-
-class CetSixWordSet(Base):
-    __tablename__ = "cet_six_word_set"
+class CetSixWordList(Base):
+    __tablename__ = "cet_six_word_list"
 
     id = Column(Integer, primary_key=True)
 
     total_number = Column(Integer)
     word_list = Column(JSON)
-
 
 
 class Word(Base):
@@ -132,6 +131,7 @@ class Word(Base):
     base_form = Column(String(30))
     # times = Column(Integer)
 
+
 class VideoTag(Base):
     __tablename__ = "video_tag"
 
@@ -142,7 +142,7 @@ class VideoTag(Base):
 class Channel(Base):
     __tablename__ = "channel"
 
-    id = Column(Integer, primary_key)
+    id = Column(Integer, primary_key=True)
     channel_id = Column(String(20))
     channel_title = Column(String(40))
 
@@ -170,7 +170,8 @@ class WatchRecord(Base):
     listener_id = Column(Integer, ForeignKey("listener.id"))
     watch_time = Column(String(20))
     video_id = Column(Integer, ForeignKey("video.id"))
-    video = relationship("video", backref=backref("video", uselist=False))
+    video = relationship("video", backref="video", uselist=False)
+
 
 Base.metadata.bind = eng
 Base.metadata.create_all()
