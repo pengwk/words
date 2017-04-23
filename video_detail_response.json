@@ -1,0 +1,128 @@
+{
+ "kind": "youtube#videoListResponse",
+ "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/J9cOnYozMb98cpEgDCPZ8q6H-LM\"",
+ "pageInfo": {
+  "totalResults": 1,
+  "resultsPerPage": 1
+ },
+ "items": [
+  {
+   "kind": "youtube#video",
+   "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/4yUvol5LYrD5AyTbtIf1XVfaHOs\"",
+   "id": "aXufzJ-Vp8g",
+   "snippet": {
+    "publishedAt": "2014-02-04T14:00:04.000Z",
+    "channelId": "UCzWQYUVCpZqtN93H8RR44Qw",
+    "title": "All-Girls Schools Have No Girl Power",
+    "description": "Over the past decade, there has been a rise in same-sex schooling in the United States. This is done in hopes that schools can increase students' achievement and academic interest, but is it effective? Trace analyzes some recent studies saying that same-sex schooling might not be the best form of education after all. \n\nRead More:\nSingle-Sex Education Unlikely To Offer Advantage Over Coed Schools\nhttp://scienceblog.com/70103/single-sex-education-unlikely-to-offer-advantage-over-coed-schools/\n\"Single-sex education does not educate girls and boys any better than coed schools, according to research published by the American Psychological Association analyzing 184 studies of more than 1.6 million students from around the world.\"\n\nGender-Segregated Education in Saudi Arabia: Its Impact on Social Norms and the Saudi Labor Market\nhttp://files.eric.ed.gov/fulltext/EJ852310.pdf\n\"The article examines the Kingdom of Saudi Arabia's gender-segregated higher education system and how it is used to transmit the Kingdom's traditional societal expectations to the employment sector.\"\n\nWhy Single-Sex Education is Spreading Across the US\nhttp://www.csmonitor.com/USA/Latest-News-Wires/2012/0708/Why-single-sex-education-is-spreading-across-the-US/(page)/2\n\"An estimated 500 public schools across the US now offer some all-boy and all-girl classrooms.\"\n\nSingle-Sex Education Is Assailed in Report\nhttp://www.nytimes.com/2011/09/23/education/23single.html\n\"Single-sex education is ineffective, misguided and may actually increase gender stereotyping, a paper to be published Friday asserts.\"\n\nSingle-Sex Versus Coeducational Schooling: A Systematic Review\nhttp://www.air.org/sites/default/files/downloads/report/Single_Sex_LitReview_091905_0.pdf\n\"Single-sex education refers most generally to education at the elementary, secondary, or postsecondary level in which males or females attend school exclusively with members of their own sex.\"\n\nThe Case Against Single-Sex Schooling\nhttp://www.washingtonpost.com/blogs/answer-sheet/post/the-case-against-single-sex-schooling/2012/06/03/gJQA75DNCV_blog.html\n\"Educators have spent several decades trying - and largely failing - to improve public schools.\"\n\nSingle-Sex Education Unlikely To Offer Advantage Over Coed Schools, Research Finds\nhttp://www.eurekalert.org/pub_releases/2014-02/apa-seu013114.php\n\"Single-sex education does not educate girls and boys any better than coed schools, according to research published by the American Psychological Association analyzing 184 studies of more than 1.6 million students from around the world.\"\n\nSingle-sex Education: What Does Research Tell Us?\nhttp://ife.ens-lyon.fr/publications/edition-electronique/revue-francaise-de-pedagogie/RF171-5.pdf\n\"There has been considerable research and policy debate internationally about whether single-sex schooling yields academic and social advantages for girls and/or boys.\"\n\nThe Pseudoscience of Single-Sex Schooling\nhttp://www.womenstudies.wisc.edu/documents/ScienceSingle-sex09-23-11.pdf\n\"In attempting to improve schools, it is critical to remember that not all reforms lead to meaningful gains for students.\"\nWhat Are Little Boys Made Of?\nhttp://en.wikipedia.org/wiki/What_Are_Little_Boys_Made_Of%3F\n\"'What Are Little Boys Made Of?' is a popular nursery rhyme dating from the early 19th century.\"\n\nWatch More:\nDo School Uniforms Help?\nhttp://www.youtube.com/watch?v=WMetDWhU0z4\nTestTube Wild Card\nhttp://testtube.com/dnews/dnews-175-the-truth-about-diamonds?utm_source=YT&utm_medium=DNews&utm_campaign=DNWC\nWhy Students Need More Sleep\nhttp://www.youtube.com/watch?v=0t3R9WqEm4M \n\n____________________\n\nDNews is dedicated to satisfying your curiosity and to bringing you mind-bending stories & perspectives you won't find anywhere else! New videos twice daily. \n\nWatch More DNews on TestTube http://testtube.com/dnews\n\nSubscribe now! http://www.youtube.com/subscription_center?add_user=dnewschannel\n\nDNews on Twitter http://twitter.com/dnews\n\nAnthony Carboni on Twitter http://twitter.com/acarboni\n\nLaci Green on Twitter http://twitter.com/gogreen18\n\nTrace Dominguez on Twitter http://twitter.com/trace501\n\nDNews on Facebook http://facebook.com/dnews\n\nDNews on Google+ http://gplus.to/dnews\n\nDiscovery News http://discoverynews.com",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/aXufzJ-Vp8g/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/aXufzJ-Vp8g/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/aXufzJ-Vp8g/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     },
+     "standard": {
+      "url": "https://i.ytimg.com/vi/aXufzJ-Vp8g/sddefault.jpg",
+      "width": 640,
+      "height": 480
+     },
+     "maxres": {
+      "url": "https://i.ytimg.com/vi/aXufzJ-Vp8g/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720
+     }
+    },
+    "channelTitle": "Seeker",
+    "tags": [
+     "single-sex",
+     "same sex",
+     "school",
+     "all girls school",
+     "all boys school",
+     "education",
+     "no child left behind",
+     "distracted",
+     "sexually distracted",
+     "gender stereotype",
+     "sex stereotype",
+     "gender roles",
+     "gender",
+     "same-gender",
+     "sex",
+     "same-sex education",
+     "single-sex education",
+     "coed",
+     "sexism",
+     "girl power",
+     "sex segregation",
+     "gender segregation",
+     "college",
+     "high school",
+     "middle school",
+     "elementary school",
+     "catholic",
+     "catholic school",
+     "children",
+     "c-sociology",
+     "testtube",
+     "test tube",
+     "science",
+     "discovery news",
+     "d news",
+     "dnews",
+     "trace dominguez"
+    ],
+    "categoryId": "28",
+    "liveBroadcastContent": "none",
+    "localized": {
+     "title": "All-Girls Schools Have No Girl Power",
+     "description": "Over the past decade, there has been a rise in same-sex schooling in the United States. This is done in hopes that schools can increase students' achievement and academic interest, but is it effective? Trace analyzes some recent studies saying that same-sex schooling might not be the best form of education after all. \n\nRead More:\nSingle-Sex Education Unlikely To Offer Advantage Over Coed Schools\nhttp://scienceblog.com/70103/single-sex-education-unlikely-to-offer-advantage-over-coed-schools/\n\"Single-sex education does not educate girls and boys any better than coed schools, according to research published by the American Psychological Association analyzing 184 studies of more than 1.6 million students from around the world.\"\n\nGender-Segregated Education in Saudi Arabia: Its Impact on Social Norms and the Saudi Labor Market\nhttp://files.eric.ed.gov/fulltext/EJ852310.pdf\n\"The article examines the Kingdom of Saudi Arabia's gender-segregated higher education system and how it is used to transmit the Kingdom's traditional societal expectations to the employment sector.\"\n\nWhy Single-Sex Education is Spreading Across the US\nhttp://www.csmonitor.com/USA/Latest-News-Wires/2012/0708/Why-single-sex-education-is-spreading-across-the-US/(page)/2\n\"An estimated 500 public schools across the US now offer some all-boy and all-girl classrooms.\"\n\nSingle-Sex Education Is Assailed in Report\nhttp://www.nytimes.com/2011/09/23/education/23single.html\n\"Single-sex education is ineffective, misguided and may actually increase gender stereotyping, a paper to be published Friday asserts.\"\n\nSingle-Sex Versus Coeducational Schooling: A Systematic Review\nhttp://www.air.org/sites/default/files/downloads/report/Single_Sex_LitReview_091905_0.pdf\n\"Single-sex education refers most generally to education at the elementary, secondary, or postsecondary level in which males or females attend school exclusively with members of their own sex.\"\n\nThe Case Against Single-Sex Schooling\nhttp://www.washingtonpost.com/blogs/answer-sheet/post/the-case-against-single-sex-schooling/2012/06/03/gJQA75DNCV_blog.html\n\"Educators have spent several decades trying - and largely failing - to improve public schools.\"\n\nSingle-Sex Education Unlikely To Offer Advantage Over Coed Schools, Research Finds\nhttp://www.eurekalert.org/pub_releases/2014-02/apa-seu013114.php\n\"Single-sex education does not educate girls and boys any better than coed schools, according to research published by the American Psychological Association analyzing 184 studies of more than 1.6 million students from around the world.\"\n\nSingle-sex Education: What Does Research Tell Us?\nhttp://ife.ens-lyon.fr/publications/edition-electronique/revue-francaise-de-pedagogie/RF171-5.pdf\n\"There has been considerable research and policy debate internationally about whether single-sex schooling yields academic and social advantages for girls and/or boys.\"\n\nThe Pseudoscience of Single-Sex Schooling\nhttp://www.womenstudies.wisc.edu/documents/ScienceSingle-sex09-23-11.pdf\n\"In attempting to improve schools, it is critical to remember that not all reforms lead to meaningful gains for students.\"\nWhat Are Little Boys Made Of?\nhttp://en.wikipedia.org/wiki/What_Are_Little_Boys_Made_Of%3F\n\"'What Are Little Boys Made Of?' is a popular nursery rhyme dating from the early 19th century.\"\n\nWatch More:\nDo School Uniforms Help?\nhttp://www.youtube.com/watch?v=WMetDWhU0z4\nTestTube Wild Card\nhttp://testtube.com/dnews/dnews-175-the-truth-about-diamonds?utm_source=YT&utm_medium=DNews&utm_campaign=DNWC\nWhy Students Need More Sleep\nhttp://www.youtube.com/watch?v=0t3R9WqEm4M \n\n____________________\n\nDNews is dedicated to satisfying your curiosity and to bringing you mind-bending stories & perspectives you won't find anywhere else! New videos twice daily. \n\nWatch More DNews on TestTube http://testtube.com/dnews\n\nSubscribe now! http://www.youtube.com/subscription_center?add_user=dnewschannel\n\nDNews on Twitter http://twitter.com/dnews\n\nAnthony Carboni on Twitter http://twitter.com/acarboni\n\nLaci Green on Twitter http://twitter.com/gogreen18\n\nTrace Dominguez on Twitter http://twitter.com/trace501\n\nDNews on Facebook http://facebook.com/dnews\n\nDNews on Google+ http://gplus.to/dnews\n\nDiscovery News http://discoverynews.com"
+    }
+   },
+   "contentDetails": {
+    "duration": "PT3M32S",
+    "dimension": "2d",
+    "definition": "hd",
+    "caption": "false",
+    "licensedContent": true,
+    "projection": "rectangular"
+   },
+   "status": {
+    "uploadStatus": "processed",
+    "privacyStatus": "public",
+    "license": "youtube",
+    "embeddable": true,
+    "publicStatsViewable": true
+   },
+   "statistics": {
+    "viewCount": "244775",
+    "likeCount": "4276",
+    "dislikeCount": "150",
+    "favoriteCount": "0",
+    "commentCount": "1480"
+   },
+   "player": {
+    "embedHtml": "\u003ciframe width=\"480\" height=\"270\" src=\"//www.youtube.com/embed/aXufzJ-Vp8g\" frameborder=\"0\" allowfullscreen\u003e\u003c/iframe\u003e"
+   },
+   "topicDetails": {
+    "relevantTopicIds": [
+     "/m/098wr",
+     "/m/098wr"
+    ],
+    "topicCategories": [
+     "https://en.wikipedia.org/wiki/Society"
+    ]
+   }
+  }
+ ]
+}
