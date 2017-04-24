@@ -19,20 +19,19 @@ __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
 def download_transcript(video_id, lang="en"):
-	"""
-	视频没有字幕时，返回""
-	"""
-	import requests
-	api_url = "http://video.google.com/timedtext"
-	_raw_response = requests.get(api_url, 
-		params={"lang": lang, "v": video_id})
-	return _raw_response.content
+    """
+    视频没有字幕时，返回
+    """
+    import requests
+    api_url = "http://video.google.com/timedtext"
+    _raw_response = requests.get(api_url,
+        params={"lang": lang, "v": video_id})
+    return _raw_response.content
 
 
 def get_word_baseform(word):
-	from nltk.stem.wordnet import WordNetLemmatizer
-	# from nltk.corpus import wordnet
-	return WordNetLemmatizer().lemmatize(word)
+    from nltk.stem.wordnet import WordNetLemmatizer
+    return WordNetLemmatizer().lemmatize(word)
 
 
 def simple_token(text, to_lowcase):
@@ -88,7 +87,7 @@ def statistic_frequency(tokens=None, text=None, is_json=True):
     import json
     data = {}
     if tokens is None:
-    	tokens = simple_token(text)
+        tokens = simple_token(text)
     for word in tokens:
         if word not in data:
             data[word] = 1

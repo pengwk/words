@@ -21,13 +21,16 @@ __status__ = "BraveHeart"
 # 数据库连接
 def create_session():
     from sqlalchemy import create_engine
+    from sqlalchemy.orm import scoped_session
     from sqlalchemy.orm import sessionmaker
-    eng = create_engine('mysql://root:nopassword@localhost/words?charset=utf8',
+
+    engine = create_engine('mysql://root:nopassword@localhost/words?charset=utf8',
                         encoding='utf-8')
+    session_factory = sessionmaker(bind=engine)
+    Session = scoped_session(session_factory)
+    return Session
 
-    session = sessionmaker(bind=eng)
-    return session()
-
+ThreadSession = create_session()
 # 首先，定义一个频道列表
 # 获取单个频道里的上传列表
 
@@ -43,21 +46,21 @@ def download_channel_video_list(channel_id):
     # 将上传列表加入数据库
     from models import Video, Playlist
     playlist = Playlist(playlist_id=upload_list_id)
-    session = create_session()
+    global ThreadSession
+    session = ThreadSession()
     session.add(playlist)
     session.commit()
     # 将视频与上传列表建立关系，并加入数据库
-    def _add_video(video_id):
+    def _add_video(video_id, session):
         # todo 复习闭包
-        session = create_session()
         video = Video(video_id=video_id)
         video.playlists.append(playlist)
         session.add(video)
         session.commit()
-        session.close()
 
-    [_add_video(video_id) for video_id in video_id_list]
-    session.close()
+
+    [_add_video(video_id,session) for video_id in video_id_list]
+    ThreadSession.remove()
     return None
 
 
@@ -66,9 +69,9 @@ def download_video_detail(video):
     """
     """
     from youtube import get_video_detail
-    detail = get_video_detail(video.id)
-    
-    session = create_session()
+    detail = get_video_detail(video.video_id)
+    global ThreadSession
+    session = ThreadSession()
     # 获取video对象
     from models import Video, VideoTag, Channel
     # 填入数据
@@ -78,7 +81,7 @@ def download_video_detail(video):
     status = detail["status"]
     # status
     video.license = status["license"]
-    video.embebable = status["embedable"]
+    # video.embedable = status["embedable"] key_error
     # iframe播放器URL
     video.player_url = detail["player"]["embedHtml"]
     # 统计 statistics
@@ -96,12 +99,12 @@ def download_video_detail(video):
     video.is_licensed_content = contentDetails["licensedContent"]
     video.projection = contentDetails["projection"]
     # snippet
-    video.title  = snippet["title"]
-    video.description  = snippet["description"]
-    video.published_at  = snippet["publishedAt"]
+    video.title = snippet["title"]
+    video.description = snippet["description"]
+    video.published_at = snippet["publishedAt"]
     # todo 会自动转换成json吗？
-    video.thumbails  = snippet["thumbails"]
-    video.category_id  = int(snippet["categoryId"])
+    # video.thumbails = snippet["thumbails"] KeyError
+    video.category_id = int(snippet["categoryId"])
 
     session.commit()
     # 处理tag
@@ -116,20 +119,27 @@ def download_video_detail(video):
                     channel_id=snippet["channelId"])
     session.add(channel)
     session.commit()
-    session.close()    
+    ThreadSession.remove()
+    return None
 
 def download_transcript(video):
+    print "working"
     from transcript import download_transcript as dt
-    session = create_session()
-    video.xml_transcript = dt(video.id)
+    from models import Video
+    global ThreadSession
+    session = ThreadSession()
+    # 不能被提交的原因是什么？
+    my_session_video = session.query(Video).filter_by(id=video.id)
+    my_session_video.xml_transcript = dt(video.video_id)
     session.commit()
-    session.close()
+    ThreadSession.remove()
+    print session.query(Video).filter(Video.xml_transcript != "").all()
     return None
 
 
 # 分析字幕文件 转为text，统计每个视频的词频，建立词与视频的对应关系 
 def analysis_transcript(video):
-    session = create_session()
+    session = create_session()()
     # 转换字幕成text
     from transcript import get_clean_transcript, simple_token
     clean_transcript = get_clean_transcript(video.xml_transcript)
@@ -160,7 +170,7 @@ def analysis_transcript(video):
     from transcript import statistic_frequency
     video.word_frequency = statistic_frequency(tokens)
     session.commit()
-    session.close()
+    session.remove()
 
 def duration_to_min(duration, ):
     """
@@ -185,7 +195,7 @@ def statistics_for_cet_six(video):
     from transcript import get_word_baseform
     import json
     # 获取单个视频的所有词
-    session = create_session()
+    session = create_session()()
     word_list = []
     for word in video.words:
         baseform = get_word_baseform(word.text)
@@ -196,7 +206,7 @@ def statistics_for_cet_six(video):
     session.add(cet_word)
     video.cet_six_word_list = cet_word
     session.commit()
-    session.close()
+    session.remove()
     return None
     # 词性还原
 
@@ -208,29 +218,30 @@ def main():
     from multiprocessing import Pool
     from multiprocessing.dummy import Pool as ThreadPool
 
-    channels = {"NowThis": "UCgRvm1yLFoaQKhmaTqXk9SA",
-                "Stories": "UCJsSEDFFnMFvW9JWU6XUn0Q",
-                "Fox News Insider": "UCqlYzSgsh5jdtWYfVIBoTDw"
-                }
-    channel_id_list = channels.values()
-    # 下载视频id
-    pool = ThreadPool(5)
-    result = pool.map(download_channel_video_list, channel_id_list)
-    pool.close() 
-    pool.join()
+    # channels = {"NowThis": "UCgRvm1yLFoaQKhmaTqXk9SA",
+    #             "Stories": "UCJsSEDFFnMFvW9JWU6XUn0Q",
+    #             "Fox News Insider": "UCqlYzSgsh5jdtWYfVIBoTDw"
+    #             }
+    # channel_id_list = channels.values()
+    # # 下载视频id
+    # pool = ThreadPool(5)
+    # result = pool.map(download_channel_video_list, channel_id_list)
+    # pool.close()
+    # pool.join()
     print "video_id done"
     # 基本信息
     from models import Video
-    session = create_session()
-    video_list = session.query(Video).all()
-    pool = ThreadPool(5)
-    result = pool.map(download_video_detail, video_list)
-    pool.close() 
-    pool.join()
-    print "basic detail done"
+    session = ThreadSession()
+    # video_list = session.query(Video).all()
+    # pool = ThreadPool(5)
+    # result = pool.map(download_video_detail, video_list)
+    # pool.close()
+    # pool.join()
+    # print "basic detail done"
     # 下载字幕
     video_list = session.query(Video).all()
-    pool = ThreadPool(5)
+    pool = ThreadPool(10)
+    print "pool"
     result = pool.map(download_transcript, video_list)
     pool.close() 
     pool.join()

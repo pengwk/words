@@ -27,7 +27,7 @@ DB_NAME = "youtube_videos"
 
 # 连接到MySQL数据库 格式dialect+driver://username:password@host:port/database
 # UTF8支持 ?charset=utf8', encoding='utf-8'
-eng = create_engine('mysql://root:nopassword@localhost/youtube_videos?charset=utf8', encoding='utf-8')
+eng = create_engine('mysql://root:nopassword@localhost/words?charset=utf8', encoding='utf-8')
 
 Base = declarative_base()
 
@@ -43,7 +43,7 @@ video_playlist_map_table = Table('video_playlist_maps', Base.metadata,
 
 video_tag_map_table = Table('video_tag_maps', Base.metadata,
                             Column('video_id', Integer, ForeignKey('video.id')),
-                            Column('videotag_id', Integer, ForeignKey('videotag.id'))
+                            Column('video_tag_id', Integer, ForeignKey('video_tag.id'))
                             )
 
 
@@ -68,7 +68,7 @@ class Video(Base):
                          backref="videos")
     # 多个视频对应一个channel 多对一
     channel_id = Column(Integer, ForeignKey("channel.id"))
-    channel = relationship('channel', bacdkref="video")
+    channel = relationship('Channel', backref="video")
 
     # 一个列表多个视频，一个视频多个列表 多对多
     playlists = relationship("Playlist",
@@ -109,7 +109,7 @@ class Video(Base):
     favorite_count = Column(Integer)
     comment_count = Column(Integer)
     # 包含的六级单词 一对一关系
-    cet_six_word_list_id = Column(Integer, ForeignKey("CetSixWordList.id"))
+    cet_six_word_list_id = Column(Integer, ForeignKey("cet_six_word_list.id"))
     cet_six_word_list = relationship("CetSixWordList", backref="video", uselist=False)
 
 
@@ -151,11 +151,11 @@ class Playlist(Base):
     __tablename__ = "playlist"
 
     id = Column(Integer, primary_key=True)
-    playlistId = Column(String(40))
+    playlist_id = Column(String(40))
 
 
 class Listener(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'listener'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(20))
@@ -166,11 +166,11 @@ class WatchRecord(Base):
     __tablename__ = 'watch_record'
 
     id = Column(Integer, primary_key=True)
-    listener = relationship("listener", backref="watch_records")
     listener_id = Column(Integer, ForeignKey("listener.id"))
+    listener = relationship("Listener", backref="watch_records")
     watch_time = Column(String(20))
     video_id = Column(Integer, ForeignKey("video.id"))
-    video = relationship("video", backref="video", uselist=False)
+    video = relationship("Video", backref="video", uselist=False)
 
 
 Base.metadata.bind = eng
