@@ -135,9 +135,9 @@ def get_video_detail(video_id):
 
 def test_video_detail():
     video_id = "ytkt2YxGou4"
-    get_video_detail(video_id)
+    print get_video_detail(video_id)
 
 if __name__ == '__main__':
     test_video_detail()
-    test_playlist_items()
+    # test_playlist_items()
 
