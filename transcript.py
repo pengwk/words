@@ -37,7 +37,7 @@ def get_word_baseform(word):
     return WordNetLemmatizer().lemmatize(word)
 
 
-def simple_token(text, to_lowcase):
+def simple_token(text, ):
     """
     # 将部分字符替换成空格，按空格分词
     :param text:

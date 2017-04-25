@@ -101,7 +101,7 @@ def download_video_detail(video, session):
     video.published_at = snippet.get("publishedAt")
     # todo 会自动转换成json吗？
     # video.thumbails = snippet["thumbails"] KeyError
-    video.category_id = int(snippet["categoryId"])
+    video.category_id = int(snippet.get("categoryId"))
     session.add(video)
     session.commit()
     # 处理tag
@@ -137,10 +137,10 @@ def download_transcript(video, session):
 
 
 # 分析字幕文件 转为text，统计每个视频的词频，建立词与视频的对应关系 
-def analysis_transcript(video):
-    session = create_session()()
+def analysis_transcript(video, session):
     # 转换字幕成text
     from transcript import get_clean_transcript, simple_token
+    session.add(video)
     clean_transcript = get_clean_transcript(video.xml_transcript)
     video.clean_transcript = clean_transcript
     # 分词
@@ -165,7 +165,8 @@ def analysis_transcript(video):
     # 统计词频，总字数，加入数据库，计算语速
     word_number = len(tokens)
     video.word_number = word_number
-    video.speed = word_number / duration_to_min(video.duration)
+    if video.duration != "":
+        video.speed = word_number / duration_to_min(video.duration)
     from transcript import statistic_frequency
     video.word_frequency = statistic_frequency(tokens)
     session.commit()
@@ -175,9 +176,20 @@ def duration_to_min(duration, ):
     """
     duration的例子PT3M32S,返回分钟数
     """
+    print duration
+    # bug PT35S
+    if duration.count("M") == 0:
+        _min = 0
+        second = duration[2:-1]
+        return (int(_min) + int(second)) / 60.0
     _min = duration.split("M")[0][2:]
     second = duration.split("M")[1][:-1]
-    return int(_min) + int(second)/60.0
+
+    if _min == "":
+        _min = 0
+    if second == "":
+        second = 0
+    return (int(_min) + int(second))/60.0
 
 
 # 获取所有词的原形，检查包含符号的词，并输出到文件中
@@ -225,10 +237,6 @@ def main():
     #             }
     # channel_id_list = channels.values()
     # # 下载视频id
-    # pool = ThreadPool(5)
-    # result = pool.map(download_channel_video_list, channel_id_list)
-    # pool.close()
-    # pool.join()
     print "video_id done"
     # 基本信息
     from models import Video
@@ -241,11 +249,13 @@ def main():
     # [download_transcript(video, session)for video in video_list]
     print "download transcript done"
     # 分析
-    video_list = session.query(Video).filter(Video.clean_transcript == "no").all()
-    pool = Pool()
-    pool.map(analysis_transcript, video_list)
-    pool.close()
-    pool.join()
+    video_list = session.query(Video).filter(Video.xml_transcript == "no").all()
+    for video in video_list:
+        video.xml_transcript = ""
+        session.commit()
+    print "clean finished"
+    video_list = session.query(Video).filter(Video.xml_transcript != "").all()
+    [analysis_transcript(video, session) for video in video_list]
     print "analysis done"
     # 统计词汇 
     video_list = session.query(Video).all()
