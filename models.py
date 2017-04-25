@@ -5,6 +5,11 @@
     Date created: 4/20/2017
     Date last modified: 4/25/2017
     Python Version: 2.7.10
+    alembic init alembic
+    修改init文件
+    修改env.py
+    alembic revision --autogenerate -m "Added account table"
+    alembic upgrade head
 """
 
 __author__ = "pengwk"
@@ -136,14 +141,14 @@ class VideoTag(Base):
     __tablename__ = "video_tag"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(30))
+    name = Column(String(200))
 
 
 class Channel(Base):
     __tablename__ = "channel"
 
     id = Column(Integer, primary_key=True)
-    channel_id = Column(String(20))
+    channel_id = Column(String(60))
     channel_title = Column(String(40))
 
 

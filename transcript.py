@@ -26,6 +26,9 @@ def download_transcript(video_id, lang="en"):
     api_url = "http://video.google.com/timedtext"
     _raw_response = requests.get(api_url,
         params={"lang": lang, "v": video_id})
+    if _raw_response.content == "":
+        return "no"
+    print _raw_response.content
     return _raw_response.content
 
 
