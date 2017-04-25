@@ -26,11 +26,9 @@ def create_session():
 
     engine = create_engine('mysql://root:nopassword@localhost/words?charset=utf8',
                         encoding='utf-8')
-    session_factory = sessionmaker(bind=engine)
-    Session = scoped_session(session_factory)
-    return Session
+    session = sessionmaker(bind=engine)
+    return session
 
-ThreadSession = create_session()
 # 首先，定义一个频道列表
 # 获取单个频道里的上传列表
 
@@ -46,8 +44,8 @@ def download_channel_video_list(channel_id):
     # 将上传列表加入数据库
     from models import Video, Playlist
     playlist = Playlist(playlist_id=upload_list_id)
-    global ThreadSession
-    session = ThreadSession()
+
+    session = create_session()()
     session.add(playlist)
     session.commit()
     # 将视频与上传列表建立关系，并加入数据库
@@ -60,80 +58,81 @@ def download_channel_video_list(channel_id):
 
 
     [_add_video(video_id,session) for video_id in video_id_list]
-    ThreadSession.remove()
+    session.close()
     return None
 
 
 # 获取视频相关信息，并加入数据库，如：xml版的字幕文件
-def download_video_detail(video):
+def download_video_detail(video, session):
     """
     """
     from youtube import get_video_detail
     detail = get_video_detail(video.video_id)
-    global ThreadSession
-    session = ThreadSession()
     # 获取video对象
     from models import Video, VideoTag, Channel
     # 填入数据
+    # todo 解决field不存在报KeyError的问题 ok
     snippet = detail["snippet"]
     contentDetails = detail["contentDetails"]
     statistics = detail["statistics"]
     status = detail["status"]
     # status
-    video.license = status["license"]
-    # video.embedable = status["embedable"] key_error
+    video.license = status.get("license")
+    video.embedable = status.get("embedable")
     # iframe播放器URL
     video.player_url = detail["player"]["embedHtml"]
     # 统计 statistics
-    video.view_count = int(statistics["viewCount"])
-    video.like_count = int(statistics["likeCount"])
-    video.dislike_count = int(statistics["dislikeCount"])
-    video.favorite_count = int(statistics["favoriteCount"])
-    video.comment_count = int(statistics["commentCount"])
+    video.view_count = int(statistics.get("viewCount"))
+    video.like_count = int(statistics.get("likeCount"))
+    video.dislike_count = int(statistics.get("dislikeCount"))
+    video.favorite_count = int(statistics.get("favoriteCount"))
+    video.comment_count = int(statistics.get("commentCount"))
     # 内容细节 contentDetails
-    video.duration = contentDetails["duration"]
-    video.dimension = contentDetails["dimension"]
-    video.definition = contentDetails["definition"]
+    video.duration = contentDetails.get("duration")
+    video.dimension = contentDetails.get("dimension")
+    video.definition = contentDetails.get("definition")
     # todo 会自动转换false吗？
-    video.has_caption = contentDetails["caption"]
-    video.is_licensed_content = contentDetails["licensedContent"]
-    video.projection = contentDetails["projection"]
+    video.has_caption = contentDetails.get("caption")
+    video.is_licensed_content = contentDetails.get("licensedContent")
+    video.projection = contentDetails.get("projection")
     # snippet
-    video.title = snippet["title"]
-    video.description = snippet["description"]
-    video.published_at = snippet["publishedAt"]
+    video.title = snippet.get("title")
+    video.description = snippet.get("description")
+    video.published_at = snippet.get("publishedAt")
     # todo 会自动转换成json吗？
     # video.thumbails = snippet["thumbails"] KeyError
     video.category_id = int(snippet["categoryId"])
-
+    session.add(video)
     session.commit()
     # 处理tag
-    tags = snippet["tags"]
-    for tag in tags:
-        _tag = VideoTag(name=tag)
-        session.add(_tag)
-        session.commit()
-        video.tags.append(_tag)
+    from models import get_or_create
+    try:
+        tags = snippet["tags"]
+        for tag in tags:
+            _tag, flag = get_or_create(session, VideoTag, name=tag)
+            session.add(_tag)
+            session.commit()
+            video.tags.append(_tag)
+    except KeyError:
+        pass
     # 处理channel
-    channel = Channel(channel_title=snippet["channelTitle"], 
+    channel, flag = get_or_create(session, Channel, channel_title=snippet["channelTitle"],
                     channel_id=snippet["channelId"])
+    video.channel = channel
     session.add(channel)
     session.commit()
-    ThreadSession.remove()
+    # session.close()
     return None
 
-def download_transcript(video):
-    print "working"
+
+def download_transcript(video, session):
     from transcript import download_transcript as dt
     from models import Video
-    global ThreadSession
-    session = ThreadSession()
     # 不能被提交的原因是什么？
-    my_session_video = session.query(Video).filter_by(id=video.id)
-    my_session_video.xml_transcript = dt(video.video_id)
+    video.xml_transcript = dt(video.video_id)
     session.commit()
-    ThreadSession.remove()
-    print session.query(Video).filter(Video.xml_transcript != "").all()
+    # session.close()
+    # print session.query(Video).filter(Video.xml_transcript != "").all()
     return None
 
 
@@ -170,7 +169,7 @@ def analysis_transcript(video):
     from transcript import statistic_frequency
     video.word_frequency = statistic_frequency(tokens)
     session.commit()
-    session.remove()
+    session.close()
 
 def duration_to_min(duration, ):
     """
@@ -180,6 +179,7 @@ def duration_to_min(duration, ):
     second = duration.split("M")[1][:-1]
     return int(_min) + int(second)/60.0
 
+
 # 获取所有词的原形，检查包含符号的词，并输出到文件中
 def load_word_list(filename):
     import json
@@ -187,9 +187,10 @@ def load_word_list(filename):
         _list = json.load(f)
     return set(_list)
 
+
 # 根据CET6单词表，统计每个视频包含的CET6单词，统计总个数，存入数据库
 def statistics_for_cet_six(video):
-    #加载单词表到内存 数据结构set
+    # 加载单词表到内存 数据结构set
     word_set = load_word_list("cet_clean.json")
     from models import CetSixWordList, Video
     from transcript import get_word_baseform
@@ -206,7 +207,7 @@ def statistics_for_cet_six(video):
     session.add(cet_word)
     video.cet_six_word_list = cet_word
     session.commit()
-    session.remove()
+    session.close()
     return None
     # 词性还原
 
@@ -231,23 +232,16 @@ def main():
     print "video_id done"
     # 基本信息
     from models import Video
-    session = ThreadSession()
-    # video_list = session.query(Video).all()
-    # pool = ThreadPool(5)
-    # result = pool.map(download_video_detail, video_list)
-    # pool.close()
-    # pool.join()
-    # print "basic detail done"
+    session = create_session()()
+    video_list = session.query(Video).filter(Video.duration == None).all()
+    # [download_video_detail(video, session) for video in video_list]
+
     # 下载字幕
-    video_list = session.query(Video).all()
-    pool = ThreadPool(10)
-    print "pool"
-    result = pool.map(download_transcript, video_list)
-    pool.close() 
-    pool.join()
+    video_list = session.query(Video).filter(Video.xml_transcript == None).all()
+    # [download_transcript(video, session)for video in video_list]
     print "download transcript done"
     # 分析
-    video_list = session.query(Video).all()
+    video_list = session.query(Video).filter(Video.clean_transcript == "no").all()
     pool = Pool()
     pool.map(analysis_transcript, video_list)
     pool.close()
