@@ -165,7 +165,7 @@ def analysis_transcript(video, session):
     # 统计词频，总字数，加入数据库，计算语速
     word_number = len(tokens)
     video.word_number = word_number
-    if video.duration != "":
+    if video.duration is not None or video.duration != "":
         video.speed = word_number / duration_to_min(video.duration)
     from transcript import statistic_frequency
     video.word_frequency = statistic_frequency(tokens)
@@ -201,15 +201,15 @@ def load_word_list(filename):
 
 
 # 根据CET6单词表，统计每个视频包含的CET6单词，统计总个数，存入数据库
-def statistics_for_cet_six(video):
+def statistics_for_cet_six(video, session):
     # 加载单词表到内存 数据结构set
     word_set = load_word_list("cet_clean.json")
     from models import CetSixWordList, Video
     from transcript import get_word_baseform
     import json
     # 获取单个视频的所有词
-    session = create_session()()
     word_list = []
+    session.add(video)
     for word in video.words:
         baseform = get_word_baseform(word.text)
         if baseform in word_set:
@@ -247,22 +247,20 @@ def main():
     # 下载字幕
     video_list = session.query(Video).filter(Video.xml_transcript == None).all()
     # [download_transcript(video, session)for video in video_list]
-    print "download transcript done"
-    # 分析
-    video_list = session.query(Video).filter(Video.xml_transcript == "no").all()
-    for video in video_list:
-        video.xml_transcript = ""
-        session.commit()
-    print "clean finished"
-    video_list = session.query(Video).filter(Video.xml_transcript != "").all()
-    [analysis_transcript(video, session) for video in video_list]
-    print "analysis done"
-    # 统计词汇 
-    video_list = session.query(Video).all()
-    pool = Pool()
-    pool.map(statistics_for_cet_six, video_list)
-    pool.close()
-    pool.join() 
+    # print "download transcript done"
+    # # 分析
+    # video_list = session.query(Video).filter(Video.xml_transcript == "no").all()
+    # for video in video_list:
+    #     video.xml_transcript = ""
+    #     session.commit()
+    # print "clean finished"
+    # video_list = session.query(Video).filter(Video.xml_transcript != "" and Video.speed == "").all()
+    # [analysis_transcript(video, session) for video in video_list]
+    # print "analysis done"
+    # 统计CET6词汇
+    video_list = session.query(Video).filter(Video.word_number != "").all()
+    print len(video_list)
+    [statistics_for_cet_six(video, session) for video in video_list]
     print "statistic done"
 
 if __name__ == '__main__':
