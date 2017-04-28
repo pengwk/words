@@ -18,17 +18,25 @@ __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
+
 def download_transcript(video_id, lang="en"):
     """
     视频没有字幕时，返回
     """
+    # 查看transcript_list
+    # 有英文字幕时，下载
     import requests
-    api_url = "http://video.google.com/timedtext"
-    _raw_response = requests.get(api_url,
-        params={"lang": lang, "v": video_id})
-    if _raw_response.content == "":
-        return "no"
-    print _raw_response.content
+    from bs4 import BeautifulSoup
+    _result = requests.get('https://video.google.com/timedtext?hl=en&type=list&v={}'.format(video_id))
+    _soup = BeautifulSoup(_result.content, "lxml")
+    _en_track = _soup.find_all(lang_code="en")
+    if not _en_track:
+        return None
+    _name = _en_track[0]["name"]
+    _raw_response = requests.get("http://video.google.com/timedtext",
+                                 params={"lang": lang,
+                                         "v": video_id,
+                                         "name": _name})
     return _raw_response.content
 
 
@@ -42,18 +50,34 @@ def simple_token(text, ):
     # 将部分字符替换成空格，按空格分词
     :param text:
     :return: a list contains words, e.g. ['In', 'ok']
+    例外：11th That&#39缺少分号
     """
-    _text = text
-    punctuations = [',',
+    # 转义 处理HTML 实体 例子That&#39
+    import HTMLParser
+    _text = HTMLParser.HTMLParser().unescape(text)
+    punctuations = (',',
                     '.',
                     '!',
                     ';',
                     '?',
                     '"',
-                    ]
+                    ":",
+                    "[",
+                    "]",
+                    "{",
+                    "}",
+                    "“",  #
+                    "”",  # 中文引号
+                    "‘",  # 中文单引号
+                    # "’",  不能替换成空格 world’s world's
+                    "。",  # 句号
+                    "，",  # 逗号
+                    "…",   # 英文省略号
+                    "……",  #
+                    )
     for punctuation in punctuations:
         _text = _text.replace(punctuation, ' ')
-
+    _text = _text.replace("’", "'")
     return _text.split()
 
 
@@ -64,11 +88,11 @@ def get_clean_transcript(xml_transcript):
     :return: [clean_transcript, list_contains_lines]
     """
     text_transcript = remove_xml_tag(xml_transcript)
-    no_break = remove_line_break(text_transcript)
-    return no_break
+    return remove_line_break(text_transcript)
+
 
 def remove_xml_tag(xml_text):
-    # todo 问题 xml去掉后没有空格造成 两个词连接在一起 ok
+    # xml去掉后没有空格造成 两个词连接在一起 ok
     from bs4 import BeautifulSoup
     soup = BeautifulSoup(xml_text, 'lxml')
     # 直接使用soup.text会使得 两个tag之间文本没有空格，让两个单词连成一个，这个参数指定了tag之间的文本用空格连接起来
@@ -78,6 +102,7 @@ def remove_xml_tag(xml_text):
 
 def remove_line_break(text):
     return text.replace('\n', ' ')
+
 
 # 词频统计
 def statistic_frequency(tokens=None, text=None, is_json=True):
@@ -114,13 +139,11 @@ def speech_speed(word_count, time):
     :return:
     """
 
-    return float(word_count)/float(time)
+    return float(word_count) / float(time)
 
 
-# def test_word_count():
-#
-#     from transcript import get_test_transcript,get_clean_transcript
-#     import pprint
-#     clean_transcript = get_clean_transcript(get_test_transcript())[0]
-#     print total_word(clean_transcript)
-#     pprint.pprint(word_count(clean_transcript))
+if __name__ == "__main__":
+    import requests
+
+    print download_transcript("Mo6_u7r6f3Q")
+

@@ -48,6 +48,59 @@ def get_uploads_list_id(channel_id):
     return uploads_list_id
 
 
+def search_channels(max_channel_count):
+    part = "id"
+    channel_list = []
+    result = requests.get("https://www.googleapis.com/youtube/v3/search",
+                          params={
+                              "key": DEVELOPER_KEY,
+                              "part": part,
+                              "maxResults": 50,
+                              "type": "channel",
+                              "relevanceLanguage": "en",
+                              "safeSearch": "strict",
+                          }
+                          )
+    while 1:
+        channel_list.extend(result.json()['items'])
+        if len(channel_list) >= max_channel_count:
+            break
+        try:
+            pageToken = result.json()['nextPageToken']
+        except KeyError as e:
+            break
+        result = requests.get("https://www.googleapis.com/youtube/v3/search",
+                              params={
+                                  "key": DEVELOPER_KEY,
+                                  "part": part,
+                                  "maxResults": 50,
+                                  "type": "channel",
+                                  "relevanceLanguage": "en",
+                                  "safeSearch": "strict",
+                                  "pageToken": pageToken
+                              })
+
+    return [channel.get("id").get("channelId") for channel in channel_list]
+
+
+def get_channel_details(channel_id):
+    """
+    invideoPromotion
+    :param channel_id:
+    :return:
+    """
+    part = "snippet,statistics,brandingSettings,contentDetails,contentOwnerDetails,localizations,status," \
+           "topicDetails"
+    result = requests.get("https://www.googleapis.com/youtube/v3/channels",
+                          params={
+                              "key": DEVELOPER_KEY,
+                              "part": part,
+                              "id": channel_id
+                          }
+                          )
+    return result.json()["items"]
+
+
 def get_playlist_items(playlist_id):
     """获取整个播放列表的内容
     video_list = [video_id,]
@@ -75,9 +128,11 @@ def get_playlist_items(playlist_id):
                                   "playlistId": playlist_id,
                                   "maxResults": 50,
                                   "pageToken": pageToken
-                              })
+                                    }
+                              )
     
     return [video.get("contentDetails").get("videoId") for video in video_list]
+
 
 def test_playlist_items():
     list_id = "PLSQl0a2vh4HAbVPn5Gbugtg1o5hfdzEH1"
@@ -87,7 +142,7 @@ def test_playlist_items():
 def get_xml_transcript(video_id, lang="en"):
     """
     字幕不存在时返回""空字符串
-    youtube-dl --skip-download --sub-format ttml --sub-lang en https://www.youtube.com/watch?v=jJ_Zejm7LQE
+    youtube-dl --skip-download --id --sub-lang en https://www.youtube.com/watch?v=jJ_Zejm7LQE
     --write-sub                      Write subtitle file
 --write-auto-sub                 Write automatically generated subtitle file
                                  (YouTube only)
@@ -152,6 +207,7 @@ def test_video_detail():
     print get_video_detail(video_id)
 
 if __name__ == '__main__':
-    test_video_detail()
+    print len(search_channels(100))
+    # test_video_detail()
     # test_playlist_items()
 

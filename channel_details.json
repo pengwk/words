@@ -1,0 +1,118 @@
+{
+ "kind": "youtube#channelListResponse",
+ "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/iOu_idcCiVVZBBjRh_isMvo-SEI\"",
+ "pageInfo": {
+  "totalResults": 1,
+  "resultsPerPage": 1
+ },
+ "items": [
+  {
+   "kind": "youtube#channel",
+   "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/CvXMJp5Rxm_BLC42BNeRhYLgGhU\"",
+   "id": "UCgRvm1yLFoaQKhmaTqXk9SA",
+   "snippet": {
+    "title": "NowThis",
+    "description": "",
+    "customUrl": "nowthis",
+    "publishedAt": "2013-01-24T01:44:35.000Z",
+    "thumbnails": {
+     "default": {
+      "url": "https://yt3.ggpht.com/-4mRYcmw0m4U/AAAAAAAAAAI/AAAAAAAAAAA/TVlKcBIKrWo/s88-c-k-no-mo-rj-c0xffffff/photo.jpg"
+     },
+     "medium": {
+      "url": "https://yt3.ggpht.com/-4mRYcmw0m4U/AAAAAAAAAAI/AAAAAAAAAAA/TVlKcBIKrWo/s240-c-k-no-mo-rj-c0xffffff/photo.jpg"
+     },
+     "high": {
+      "url": "https://yt3.ggpht.com/-4mRYcmw0m4U/AAAAAAAAAAI/AAAAAAAAAAA/TVlKcBIKrWo/s240-c-k-no-mo-rj-c0xffffff/photo.jpg"
+     }
+    },
+    "localized": {
+     "title": "NowThis",
+     "description": ""
+    },
+    "country": "US"
+   },
+   "contentDetails": {
+    "relatedPlaylists": {
+     "likes": "LLgRvm1yLFoaQKhmaTqXk9SA",
+     "uploads": "UUgRvm1yLFoaQKhmaTqXk9SA",
+     "watchHistory": "HL",
+     "watchLater": "WL"
+    }
+   },
+   "statistics": {
+    "viewCount": "328460260",
+    "commentCount": "3",
+    "subscriberCount": "1485244",
+    "hiddenSubscriberCount": false,
+    "videoCount": "1254"
+   },
+   "topicDetails": {
+    "topicIds": [
+     "/m/098wr",
+     "/m/098wr"
+    ],
+    "topicCategories": [
+     "https://en.wikipedia.org/wiki/Society"
+    ]
+   },
+   "status": {
+    "privacyStatus": "public",
+    "isLinked": true,
+    "longUploadsStatus": "longUploadsUnspecified"
+   },
+   "brandingSettings": {
+    "channel": {
+     "title": "NowThis",
+     "keywords": "\"now this\" \"now this news\" nowthis",
+     "defaultTab": "Featured",
+     "showRelatedChannels": true,
+     "showBrowseView": true,
+     "featuredChannelsTitle": "Featured Channels",
+     "featuredChannelsUrls": [
+      "UCzWQYUVCpZqtN93H8RR44Qw",
+      "UCe3tPdpxTF7wdBG8uV4hbew",
+      "UCJsSEDFFnMFvW9JWU6XUn0Q",
+      "UCm9L2p8ow5sxONXELw3-_3A",
+      "UCpJmBQ8iNHXeQ7jQWDyGe3A",
+      "UCXiR5VZGA_xproMufNXLYZA",
+      "UCZrN_R4ctOnp9BzmiKKyc2A"
+     ],
+     "unsubscribedTrailer": "rfv3oJRXWh8",
+     "profileColor": "#000000",
+     "country": "US"
+    },
+    "image": {
+     "bannerImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w1060-fcrop64=1,00005a57ffffa5a8-nd-c0xffffffff-rj-k-no",
+     "bannerMobileImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w640-fcrop64=1,32b75a57cd48a5a8-nd-c0xffffffff-rj-k-no",
+     "bannerTabletLowImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w1138-fcrop64=1,00005a57ffffa5a8-nd-c0xffffffff-rj-k-no",
+     "bannerTabletImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w1707-fcrop64=1,00005a57ffffa5a8-nd-c0xffffffff-rj-k-no",
+     "bannerTabletHdImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w2276-fcrop64=1,00005a57ffffa5a8-nd-c0xffffffff-rj-k-no",
+     "bannerTabletExtraHdImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w2560-fcrop64=1,00005a57ffffa5a8-nd-c0xffffffff-rj-k-no",
+     "bannerMobileLowImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w320-fcrop64=1,32b75a57cd48a5a8-nd-c0xffffffff-rj-k-no",
+     "bannerMobileMediumHdImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w960-fcrop64=1,32b75a57cd48a5a8-nd-c0xffffffff-rj-k-no",
+     "bannerMobileHdImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w1280-fcrop64=1,32b75a57cd48a5a8-nd-c0xffffffff-rj-k-no",
+     "bannerMobileExtraHdImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w1440-fcrop64=1,32b75a57cd48a5a8-nd-c0xffffffff-rj-k-no",
+     "bannerTvImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w2120-fcrop64=1,00000000ffffffff-nd-c0xffffffff-rj-k-no",
+     "bannerTvLowImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w854-fcrop64=1,00000000ffffffff-nd-c0xffffffff-rj-k-no",
+     "bannerTvMediumImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w1280-fcrop64=1,00000000ffffffff-nd-c0xffffffff-rj-k-no",
+     "bannerTvHighImageUrl": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w1920-fcrop64=1,00000000ffffffff-nd-c0xffffffff-rj-k-no"
+    },
+    "hints": [
+     {
+      "property": "channel.banner.mobile.medium.image.url",
+      "value": "https://yt3.ggpht.com/K7uQry4hN6cscnc_Ci_kd8OORpuKoH0jzByAfdyp8iDUFnsP8vBd-C6zMdmemEqABzTrq6YjGA=w640-fcrop64=1,32b75a57cd48a5a8-nd-c0xffffffff-rj-k-no"
+     },
+     {
+      "property": "channel.featured_tab.template.string",
+      "value": "Everything"
+     },
+     {
+      "property": "channel.modules.show_comments.bool",
+      "value": "True"
+     }
+    ]
+   }
+  }
+ ]
+}
