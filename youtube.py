@@ -13,6 +13,8 @@ from pprint import pprint
 
 import requests
 
+requests.packages.urllib3.disable_warnings()
+
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
 __credits__ = [""]
@@ -40,7 +42,8 @@ def get_uploads_list_id(channel_id):
                               "key": DEVELOPER_KEY,
                               "part": PART_VALUES[0],
                               "id": channel_id
-                          }
+                          },
+                          verify=False,
                           )
     uploads_list_id = result.json()['items'][0]['contentDetails']['relatedPlaylists']['uploads']
     return uploads_list_id
@@ -57,7 +60,9 @@ def search_channels(max_channel_count):
                               "type": "channel",
                               "relevanceLanguage": "en",
                               "safeSearch": "strict",
-                          }
+                          },
+                          verify=False,
+
                           )
     while 1:
         channel_list.extend(result.json()['items'])
@@ -76,7 +81,8 @@ def search_channels(max_channel_count):
                                   "relevanceLanguage": "en",
                                   "safeSearch": "strict",
                                   "pageToken": page_token
-                              })
+                              },
+                              verify=False,)
 
     return [channel.get("id").get("channelId") for channel in channel_list]
 
@@ -94,9 +100,10 @@ def get_channel_details(channel_id):
                               "key": DEVELOPER_KEY,
                               "part": part,
                               "id": channel_id
-                          }
+                          },
+                          verify=False,
                           )
-    return result.json()["items"]
+    return result.json()["items"][0]
 
 
 def get_playlist_items(playlist_id):
@@ -111,10 +118,16 @@ def get_playlist_items(playlist_id):
                               "part": PART_VALUES[0],
                               "playlistId": playlist_id,
                               "maxResults": 50
-                          })
+                          },
+                          verify=False,
+                          )
 
     while 1:
-        video_list.extend(result.json()['items'])
+        try:
+            video_list.extend(result.json()['items'])
+        except KeyError:
+            print playlist_id
+            print result.json()
         try:
             page_token = result.json()['nextPageToken']
         except KeyError:
@@ -126,7 +139,8 @@ def get_playlist_items(playlist_id):
                                   "playlistId": playlist_id,
                                   "maxResults": 50,
                                   "pageToken": page_token
-                                    }
+                                    },
+                              verify=False,
                               )
     
     return [video.get("contentDetails").get("videoId") for video in video_list]
@@ -180,9 +194,12 @@ def get_video_detail(video_id):
                               "key": DEVELOPER_KEY,
                               "part": part,
                               "id": video_id,
-                          })
-    item = result.json()["items"][0]
-    return item
+                          },
+                          verify=False,)
+    items = result.json().get("item")[0]
+    if items is None:
+        raise Exception("Quotas have reached")
+    return items[0]
 
 
 def test_video_detail():

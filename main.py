@@ -9,7 +9,10 @@
 
 """
 
-from models import db
+# from models import db
+
+# _session = db.session
+# print "_session", _session
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2017, pengwk"
@@ -30,12 +33,14 @@ __status__ = "BraveHeart"
 def download_channel_details(channel_id):
     from youtube import get_channel_details
     from models import Channel
+    from models import db
     session = db.session
     details = get_channel_details(channel_id)
     snippet = details["snippet"]
     statistics = details["statistics"]
-    related_playlists = details["contentDetails"]
-
+    related_playlists = details["contentDetails"]["relatedPlaylists"]
+    if Channel.query.filter_by(channel_id=channel_id).count():
+        return None
     channel = Channel(channel_id=channel_id)
     session.add(channel)
 
@@ -74,14 +79,15 @@ def download_channel_video_list(channel):
     """
     # 获取上传列表Id
     from youtube import get_playlist_items
-
+    from models import db
     session = db.session
 
     upload_list_id = channel.playlist_uploads
     video_id_list = get_playlist_items(upload_list_id)
     # 将上传列表加入数据库
     from models import Video, Playlist
-    playlist = Playlist(playlist_id=upload_list_id)
+    from database import get_or_create
+    playlist, flag = get_or_create(session, Playlist, playlist_id=upload_list_id)
 
     session.add(playlist)
     session.commit()
@@ -90,13 +96,21 @@ def download_channel_video_list(channel):
 
     def _add_video(_video_id, _session):
         # todo 复习闭包
-        video = Video(video_id=_video_id)
+        video, flag = get_or_create(_session, Video, video_id=_video_id)
         video.playlists.append(playlist)
         _session.add(video)
         _session.commit()
 
     [_add_video(video_id, session) for video_id in video_id_list]
     return None
+
+
+def _smart_int(_str):
+    # _str 有可能是None
+    if _str is not None:
+        return int(_str)
+    else:
+        return -1
 
 
 # 获取视频相关信息，并加入数据库，如：xml版的字幕文件
@@ -106,65 +120,84 @@ def download_video_detail(video):
     from youtube import get_video_detail
     detail = get_video_detail(video.video_id)
     # 获取video对象
-    from models import VideoTag, Channel
+    from models import db, Video
     session = db.session
+    video = session.query(Video).filter(Video.video_id == video.video_id).one()
     # 填入数据
     # 解决field不存在报KeyError的问题 ok
-    snippet = detail["snippet"]
-    content_details = detail["contentDetails"]
-    statistics = detail["statistics"]
-    status = detail["status"]
-    # status
-    video.license = status.get("license")
-    video.embedable = status.get("embedable")
-    # iframe播放器URL
-    video.player_url = detail["player"]["embedHtml"]
-    # 统计 statistics
-    video.view_count = int(statistics.get("viewCount"))
-    video.like_count = int(statistics.get("likeCount"))
-    video.dislike_count = int(statistics.get("dislikeCount"))
-    video.favorite_count = int(statistics.get("favoriteCount"))
-    video.comment_count = int(statistics.get("commentCount"))
-    # 内容细节 contentDetails
-    video.duration = content_details.get("duration")
-    video.dimension = content_details.get("dimension")
-    video.definition = content_details.get("definition")
-    video.has_caption = content_details.get("caption")
-    video.is_licensed_content = content_details.get("licensedContent")
-    video.projection = content_details.get("projection")
-    # snippet
-    video.title = snippet.get("title")
-    video.description = snippet.get("description")
-    video.published_at = snippet.get("publishedAt")
-    video.thumbails = snippet.get("thumbails")
-    video.category_id = int(snippet.get("categoryId"))
-    session.add(video)
-    session.commit()
-    # 处理tag
-    from database import get_or_create
+    # sqlalchemy.exc.OperationalError
+    import sqlalchemy
     try:
-        tags = snippet["tags"]
-        for tag in tags:
-            _tag, flag = get_or_create(session, VideoTag, name=tag)
-            session.add(_tag)
-            session.commit()
-            video.tags.append(_tag)
-    except KeyError:
+        snippet = detail["snippet"]
+        content_details = detail["contentDetails"]
+        statistics = detail["statistics"]
+        status = detail["status"]
+        # status
+        video.license = status.get("license")
+        video.embedable = status.get("embedable")
+        # iframe播放器URL
+        video.player_url = detail["player"]["embedHtml"]
+        # 统计 statistics
+        video.view_count = _smart_int(statistics.get("viewCount"))
+        video.like_count = _smart_int(statistics.get("likeCount"))
+        video.dislike_count = _smart_int(statistics.get("dislikeCount"))
+        video.favorite_count = _smart_int(statistics.get("favoriteCount"))
+        video.comment_count = _smart_int(statistics.get("commentCount"))
+        # 内容细节 contentDetails
+        video.duration = content_details.get("duration")
+        video.dimension = content_details.get("dimension")
+        video.definition = content_details.get("definition")
+        video.has_caption = content_details.get("caption")
+        video.is_licensed_content = content_details.get("licensedContent")
+        video.projection = content_details.get("projection")
+        # snippet
+        video.title = snippet.get("title")
+        video.description = snippet.get("description")
+        video.published_at = snippet.get("publishedAt")
+        video.thumbails = snippet.get("thumbails")
+        video.category_id = _smart_int(snippet.get("categoryId"))
+        video._tags = snippet.get("tags")
+        # session.add(video)
+        session.commit()
+    except sqlalchemy.exc.OperationalError as e:
+        session.rollback()
+        print snippet.get("description")
+        # todo log
+        print e
         pass
-    # 处理channel
-    channel, flag = get_or_create(session, Channel, channel_title=snippet["channelTitle"],
-                                  channel_id=snippet["channelId"])
-    video.channel = channel
-    session.add(channel)
-    session.commit()
+
+    # 处理tag
+
+    # try:
+    #     tags = snippet["tags"]
+    #     for tag in tags:
+    #         _tag, flag = get_or_create(session, VideoTag, name=tag)
+    #         session.commit()
+    #         video.tags.append(_tag)
+    # except KeyError:
+    #     pass
+    # 处理channel 暂时放弃
+    # query = Channel.query.filter_by(channel_id=snippet.get("channelId"))
+    # if query.count():
+    #     channel = query.one()
+    # else:
+    #     channel = Channel(channel_id=snippet.get("channelId"), channel_title=snippet["channelTitle"])
+    #     session.commit()
+    # video.channel = channel
+    # session.commit()
     return None
 
 
 def download_transcript(video):
     from transcript import download_transcript as dt
-
-    session = db.session
+    from models import db
+    from models import Video
+    session = db.session()
+    video = session.query(Video).filter(Video.video_id==video.video_id).one()
     video.xml_transcript = dt(video.video_id)
+    # print "                    {}".format(video.xml_transcript[0:10])
+    # session.add()
+    print video.video_id
     session.commit()
     return None
 
@@ -173,8 +206,9 @@ def download_transcript(video):
 def analysis_transcript(video):
     # 转换字幕成text
     from transcript import get_clean_transcript, simple_token
+    from models import db, Video
     session = db.session
-    session.add(video)
+    video = session.query(Video).filter(Video.video_id == video.video_id).one()
     clean_transcript = get_clean_transcript(video.xml_transcript)
     video.clean_transcript = clean_transcript
     # 分词
@@ -239,10 +273,12 @@ def load_word_list(filename):
 def statistics_for_cet_six(video):
     # 加载单词表到内存 数据结构set
     word_set = load_word_list("cet_clean.json")
-    from models import CetSixWordList
+    from models import CetSixWordList, Video
     from transcript import get_word_baseform
     import json
+    from models import db
     session = db.session
+    video = session.query(Video).filter(Video.video_id == video.video_id).one()
     # 获取单个视频的所有词
     word_list = []
     session.add(video)
@@ -263,8 +299,9 @@ def thread_pool(func, iterable, pool_size):
     from multiprocessing.dummy import Pool
     pool = Pool(pool_size)
     pool.map(func, iterable)
-    pool.join()
     pool.close()
+    pool.join()
+
     return None
 
 
@@ -272,8 +309,8 @@ def process_pool(func, iterable, pool_size):
     from multiprocessing import Pool
     pool = Pool(pool_size)
     pool.map(func, iterable)
-    pool.join()
     pool.close()
+    pool.join()
     return None
 
 
@@ -282,31 +319,50 @@ def main():
     from youtube import search_channels
     from models import Channel
     # 获取channel列表
-    channel_id_list = search_channels(3)
+    # channel_id_list = search_channels(50)
     # 下载channel的信息
-    thread_pool(download_channel_details, channel_id_list, 10)
+    # thread_pool(download_channel_details, channel_id_list, 10)
     # 从上传列表id获取视频id列表
-    channel_list = Channel.query.all()
-    thread_pool(download_channel_video_list, channel_list, 10)
+    # channel_list = Channel.query.all()
+    # thread_pool(download_channel_video_list, channel_list, 10)
     # 下载视频id
     print "video_id done"
     # 基本信息
     from models import Video
+    from models import db
+    # video_list = db.session.query(Video).order_by(Video.id).all()
+    # [download_video_detail(video) for video in video_list]
+    # thread_pool(download_video_detail, video_list, 15)
 
-    video_list = Video.query.all()
-    thread_pool(download_video_detail, video_list, 10)
-
-    # 下载字幕
-    video_list = Video.query.filter(Video.xml_transcript is None).all()
+    # 下载字幕 None表示没有下载，""代表没有
+    video_list = db.session.query(Video).filter(Video.xml_transcript == None).all()
+    # [download_transcript(video) for video in video_list]
     thread_pool(download_transcript, video_list, 10)
 
     # 分析字幕
-    video_list = Video.query.filter(len(Video.xml_transcript) > 0).all()
+    video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<")).all()
     process_pool(analysis_transcript, video_list, 2)
 
     # CET6
     process_pool(statistics_for_cet_six, video_list, 2)
 
 
+def restart():
+    import requests
+
+    try:
+        main()
+    except requests.exceptions.SSLError as e:
+        print e
+        import time
+        time.sleep(2)
+        restart()
+    except KeyError as e:
+        print e
 if __name__ == '__main__':
+    # restart()
     main()
+    # from models import Video
+    # video = Video.query.filter_by(video_id='xGSOVE20xa0').first()
+    # download_video_detail(video)
+    # download_transcript(video)

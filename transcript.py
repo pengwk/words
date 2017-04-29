@@ -31,14 +31,14 @@ def download_transcript(video_id, lang="en"):
     _soup = BeautifulSoup(_result.content, "lxml")
     _en_track = _soup.find_all(lang_code="en")
     if not _en_track:
-        return None
+        return ""
     _name = _en_track[0]["name"]
     _raw_response = requests.get("http://video.google.com/timedtext",
                                  params={"lang": lang,
                                          "v": video_id,
                                          "name": _name})
     import HTMLParser
-    return HTMLParser.HTMLParser().unescape(_raw_response.content)
+    return HTMLParser.HTMLParser().unescape(_raw_response.content.decode("utf-8")).encode("utf-8")
 
 
 def get_word_baseform(word):

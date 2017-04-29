@@ -19,11 +19,11 @@ __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost/words?charset=utf8'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-
-if __name__ == "__main__":
-    db.create_all()
+# app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost/words?charset=utf8'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db = SQLAlchemy(app)
+#
+#
+# if __name__ == "__main__":
+#     db.create_all()
