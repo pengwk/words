@@ -37,7 +37,8 @@ def download_transcript(video_id, lang="en"):
                                  params={"lang": lang,
                                          "v": video_id,
                                          "name": _name})
-    return _raw_response.content
+    import HTMLParser
+    return HTMLParser.HTMLParser().unescape(_raw_response.content)
 
 
 def get_word_baseform(word):
@@ -52,9 +53,7 @@ def simple_token(text, ):
     :return: a list contains words, e.g. ['In', 'ok']
     例外：11th That&#39缺少分号
     """
-    # 转义 处理HTML 实体 例子That&#39
-    import HTMLParser
-    _text = HTMLParser.HTMLParser().unescape(text)
+    _text = text
     punctuations = (',',
                     '.',
                     '!',
@@ -108,6 +107,7 @@ def remove_line_break(text):
 def statistic_frequency(tokens=None, text=None, is_json=True):
     """
 
+    :param tokens:
     :param text:
     :param is_json:
     :return:
@@ -146,4 +146,3 @@ if __name__ == "__main__":
     import requests
 
     print download_transcript("Mo6_u7r6f3Q")
-

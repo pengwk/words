@@ -6,7 +6,6 @@
     Date last modified: 4/25/2016
     Python Version: 2.7.10
 """
-import os
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
@@ -31,5 +30,3 @@ manager.add_command('db', MigrateCommand)
 # upgrade
 if __name__ == '__main__':
     manager.run()
-
-    

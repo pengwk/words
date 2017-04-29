@@ -8,6 +8,10 @@
     编写一个函数可以把整个播放列表全部下载下来，
     get_whole_playlist(playListId)
 """
+from pprint import pprint
+
+
+import requests
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
@@ -17,12 +21,6 @@ __version__ = "0.1"
 __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
-
-from pprint import pprint
-
-
-import requests
-import json
 
 
 DEVELOPER_KEY = "AIzaSyCWxbyw93TpHw_SSZUq6VPlU8EYzbQ8BAw"
@@ -66,8 +64,8 @@ def search_channels(max_channel_count):
         if len(channel_list) >= max_channel_count:
             break
         try:
-            pageToken = result.json()['nextPageToken']
-        except KeyError as e:
+            page_token = result.json()['nextPageToken']
+        except KeyError:
             break
         result = requests.get("https://www.googleapis.com/youtube/v3/search",
                               params={
@@ -77,7 +75,7 @@ def search_channels(max_channel_count):
                                   "type": "channel",
                                   "relevanceLanguage": "en",
                                   "safeSearch": "strict",
-                                  "pageToken": pageToken
+                                  "pageToken": page_token
                               })
 
     return [channel.get("id").get("channelId") for channel in channel_list]
@@ -118,8 +116,8 @@ def get_playlist_items(playlist_id):
     while 1:
         video_list.extend(result.json()['items'])
         try:
-            pageToken = result.json()['nextPageToken']
-        except KeyError as e:
+            page_token = result.json()['nextPageToken']
+        except KeyError:
             break
         result = requests.get("https://www.googleapis.com/youtube/v3/playlistItems",
                               params={
@@ -127,7 +125,7 @@ def get_playlist_items(playlist_id):
                                   "part": PART_VALUES[0],
                                   "playlistId": playlist_id,
                                   "maxResults": 50,
-                                  "pageToken": pageToken
+                                  "pageToken": page_token
                                     }
                               )
     
@@ -142,23 +140,8 @@ def test_playlist_items():
 def get_xml_transcript(video_id, lang="en"):
     """
     字幕不存在时返回""空字符串
-    youtube-dl --skip-download --id --sub-lang en https://www.youtube.com/watch?v=jJ_Zejm7LQE
-    --write-sub                      Write subtitle file
---write-auto-sub                 Write automatically generated subtitle file
-                                 (YouTube only)
---all-subs                       Download all the available subtitles of the
-                                 video
---list-subs                      List all available subtitles for the video
---sub-format FORMAT              Subtitle format, accepts formats
-                                 preference, for example: "srt" or
-                                 "ass/srt/best"
---sub-lang LANGS                 Languages of the subtitles to download
-                                 (optional) separated by commas, use --list-
-                                 subs for available language tags
-
     """
     import requests
-    from bs4 import BeautifulSoup
 
     api_url = "http://video.google.com/timedtext"
     _raw_response = requests.get(api_url, params={"lang": lang, "v": video_id})
@@ -166,8 +149,8 @@ def get_xml_transcript(video_id, lang="en"):
 
 
 def test_xml_transcript():
-    no_transcript_video = "qOKwU5BYK08"
-    has_transcript_video = "ytkt2YxGou4"
+    # no_transcript_video = "qOKwU5BYK08"
+    # has_transcript_video = "ytkt2YxGou4"
     no_caption_but_asr = "aXufzJ-Vp8g"
     print get_xml_transcript(no_caption_but_asr) == ""
 
@@ -210,4 +193,3 @@ if __name__ == '__main__':
     print len(search_channels(100))
     # test_video_detail()
     # test_playlist_items()
-
