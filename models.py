@@ -14,9 +14,6 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
-
-
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
@@ -166,8 +163,6 @@ class Channel(db.Model):
     video_count = db.Column(db.Integer)
     #
     thumbails = db.Column(db.JSON)
-    # 使用ext就会报错
-
 
 
 class Playlist(db.Model):
@@ -199,13 +194,14 @@ class WatchRecord(db.Model):
 def main():
     return None
 
+
 def test_db():
-    video = Video(video_id="abc")
-    db.session.add(video)
-    db.session().commit()
+    from database import get_or_create
+    video, flag = get_or_create(db.session, Video, id=1)
+    print video.video_id
 
 if __name__ == "__main__":
-    db.create_all()
-    test_db()
+    # db.create_all()
+    # test_db()
     pass
     # test()

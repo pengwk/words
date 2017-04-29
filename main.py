@@ -9,7 +9,7 @@
 
 """
 
-from database import db_session
+from models import db
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2017, pengwk"
@@ -20,6 +20,7 @@ __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
+
 # 首先，定义一个频道列表
 # 获取单个频道里的上传列表
 
@@ -29,7 +30,7 @@ __status__ = "BraveHeart"
 def download_channel_details(channel_id):
     from youtube import get_channel_details
     from models import Channel
-    session = db_session()
+    session = db.session
     details = get_channel_details(channel_id)
     snippet = details["snippet"]
     statistics = details["statistics"]
@@ -61,35 +62,40 @@ def download_channel_details(channel_id):
     channel.video_count = statistics.get("videoCount")
 
     session.commit()
-    db_session.remove()
     return None
 
 
 # 将频道列表中的所有频道完成这一步
-def download_channel_video_list(channel_id):
-    # 获取上传列表Id
-    from youtube import get_uploads_list_id,get_playlist_items
+def download_channel_video_list(channel):
+    """
 
-    upload_list_id = get_uploads_list_id(channel_id)
+    :param channel: Channel object
+    :return: a list contains video id
+    """
+    # 获取上传列表Id
+    from youtube import get_playlist_items
+
+    session = db.session
+
+    upload_list_id = channel.playlist_uploads
     video_id_list = get_playlist_items(upload_list_id)
     # 将上传列表加入数据库
     from models import Video, Playlist
     playlist = Playlist(playlist_id=upload_list_id)
 
-    session = db_session()
     session.add(playlist)
     session.commit()
+
     # 将视频与上传列表建立关系，并加入数据库
 
-    def _add_video(video_id, session):
+    def _add_video(_video_id, _session):
         # todo 复习闭包
-        video = Video(video_id=video_id)
+        video = Video(video_id=_video_id)
         video.playlists.append(playlist)
-        session.add(video)
-        session.commit()
+        _session.add(video)
+        _session.commit()
 
-    [_add_video(video_id,session) for video_id in video_id_list]
-    db_session().remove()
+    [_add_video(video_id, session) for video_id in video_id_list]
     return None
 
 
@@ -100,12 +106,12 @@ def download_video_detail(video):
     from youtube import get_video_detail
     detail = get_video_detail(video.video_id)
     # 获取video对象
-    from models import Video, VideoTag, Channel
-    session = db_session()
+    from models import VideoTag, Channel
+    session = db.session
     # 填入数据
     # 解决field不存在报KeyError的问题 ok
     snippet = detail["snippet"]
-    contentDetails = detail["contentDetails"]
+    content_details = detail["contentDetails"]
     statistics = detail["statistics"]
     status = detail["status"]
     # status
@@ -120,12 +126,12 @@ def download_video_detail(video):
     video.favorite_count = int(statistics.get("favoriteCount"))
     video.comment_count = int(statistics.get("commentCount"))
     # 内容细节 contentDetails
-    video.duration = contentDetails.get("duration")
-    video.dimension = contentDetails.get("dimension")
-    video.definition = contentDetails.get("definition")
-    video.has_caption = contentDetails.get("caption")
-    video.is_licensed_content = contentDetails.get("licensedContent")
-    video.projection = contentDetails.get("projection")
+    video.duration = content_details.get("duration")
+    video.dimension = content_details.get("dimension")
+    video.definition = content_details.get("definition")
+    video.has_caption = content_details.get("caption")
+    video.is_licensed_content = content_details.get("licensedContent")
+    video.projection = content_details.get("projection")
     # snippet
     video.title = snippet.get("title")
     video.description = snippet.get("description")
@@ -147,22 +153,19 @@ def download_video_detail(video):
         pass
     # 处理channel
     channel, flag = get_or_create(session, Channel, channel_title=snippet["channelTitle"],
-                    channel_id=snippet["channelId"])
+                                  channel_id=snippet["channelId"])
     video.channel = channel
     session.add(channel)
     session.commit()
-    db_session().remove()
     return None
 
 
-def download_transcript(video, session):
+def download_transcript(video):
     from transcript import download_transcript as dt
-    from models import Video
-    # 不能被提交的原因是什么？
+
+    session = db.session
     video.xml_transcript = dt(video.video_id)
     session.commit()
-    # session.close()
-    # print session.query(Video).filter(Video.xml_transcript != "").all()
     return None
 
 
@@ -170,14 +173,14 @@ def download_transcript(video, session):
 def analysis_transcript(video):
     # 转换字幕成text
     from transcript import get_clean_transcript, simple_token
-    session = db_session()
+    session = db.session
     session.add(video)
     clean_transcript = get_clean_transcript(video.xml_transcript)
     video.clean_transcript = clean_transcript
     # 分词
     tokens = simple_token(clean_transcript)
     import logging
-    logging.basicConfig(filename='unregular_words.log',level=logging.DEBUG)
+    logging.basicConfig(filename='unregular_words.log', level=logging.DEBUG)
     # 将词汇与视频建立关系，加入数据库
     from models import Word
     from database import get_or_create
@@ -202,7 +205,6 @@ def analysis_transcript(video):
     from transcript import statistic_frequency
     video.word_frequency = statistic_frequency(tokens)
     session.commit()
-    session.remove()
 
 
 def duration_to_min(duration, ):
@@ -222,7 +224,7 @@ def duration_to_min(duration, ):
         _min = 0
     if second == "":
         second = 0
-    return (int(_min) + int(second))/60.0
+    return (int(_min) + int(second)) / 60.0
 
 
 # 获取所有词的原形，检查包含符号的词，并输出到文件中
@@ -237,10 +239,10 @@ def load_word_list(filename):
 def statistics_for_cet_six(video):
     # 加载单词表到内存 数据结构set
     word_set = load_word_list("cet_clean.json")
-    from models import CetSixWordList, Video
+    from models import CetSixWordList
     from transcript import get_word_baseform
     import json
-    session = db_session()
+    session = db.session
     # 获取单个视频的所有词
     word_list = []
     session.add(video)
@@ -249,50 +251,62 @@ def statistics_for_cet_six(video):
         if baseform in word_set:
             word_list.append(baseform)
     cet_word = CetSixWordList(total_number=len(word_list),
-                                word_list=json.dumps(word_list))
+                              word_list=json.dumps(word_list))
     session.add(cet_word)
     video.cet_six_word_list = cet_word
     session.commit()
-    db_session().remove()
     return None
     # 词性还原
 
 
+def thread_pool(func, iterable, pool_size):
+    from multiprocessing.dummy import Pool
+    pool = Pool(pool_size)
+    pool.map(func, iterable)
+    pool.join()
+    pool.close()
+    return None
 
+
+def process_pool(func, iterable, pool_size):
+    from multiprocessing import Pool
+    pool = Pool(pool_size)
+    pool.map(func, iterable)
+    pool.join()
+    pool.close()
+    return None
 
 
 def main():
-    from multiprocessing import Pool
-    from multiprocessing.dummy import Pool as ThreadPool
 
-    # channel_id_list = channels.values()
-    # # 下载视频id
+    from youtube import search_channels
+    from models import Channel
+    # 获取channel列表
+    channel_id_list = search_channels(3)
+    # 下载channel的信息
+    thread_pool(download_channel_details, channel_id_list, 10)
+    # 从上传列表id获取视频id列表
+    channel_list = Channel.query.all()
+    thread_pool(download_channel_video_list, channel_list, 10)
+    # 下载视频id
     print "video_id done"
     # 基本信息
     from models import Video
-    session = db_session()
-    video_list = session.query(Video).filter(Video.duration == None).all()
-    # [download_video_detail(video, session) for video in video_list]
+
+    video_list = Video.query.all()
+    thread_pool(download_video_detail, video_list, 10)
 
     # 下载字幕
-    video_list = session.query(Video).filter(Video.xml_transcript == None).all()
-    # [download_transcript(video, session)for video in video_list]
-    # print "download transcript done"
-    # # 分析
-    # video_list = session.query(Video).filter(Video.xml_transcript == "no").all()
-    # for video in video_list:
-    #     video.xml_transcript = ""
-    #     session.commit()
-    # print "clean finished"
-    # video_list = session.query(Video).filter(Video.xml_transcript != "" and Video.speed == "").all()
-    # [analysis_transcript(video, session) for video in video_list]
-    # print "analysis done"
-    # 统计CET6词汇
-    video_list = session.query(Video).filter(Video.word_number != "").all()
-    print len(video_list)
-    [statistics_for_cet_six(video, session) for video in video_list]
-    print "statistic done"
+    video_list = Video.query.filter(Video.xml_transcript is None).all()
+    thread_pool(download_transcript, video_list, 10)
+
+    # 分析字幕
+    video_list = Video.query.filter(len(Video.xml_transcript) > 0).all()
+    process_pool(analysis_transcript, video_list, 2)
+
+    # CET6
+    process_pool(statistics_for_cet_six, video_list, 2)
+
 
 if __name__ == '__main__':
-    pass
-    # main()
+    main()
