@@ -48,8 +48,8 @@ class Video(db.Model):
     __tablename__ = "video"
 
     id = db.Column(db.Integer, primary_key=True)
-    video_id = db.Column(db.String(20))
-    title = db.Column(db.String(100))
+    video_id = db.Column(db.String(20), unique=True)
+    title = db.Column(db.String(200))
     description = db.Column(db.Text)
     # 格式     YYYY-MM-DDThh:mm:ss.sZ
     published_at = db.Column(db.String(40))
@@ -84,6 +84,7 @@ class Video(db.Model):
     tags = db.relationship("VideoTag",
                            secondary=video_tag_map_table,
                            backref="videos")
+    _tags = db.Column(db.JSON)
     # 缩略图
     thumbnails = db.Column(db.JSON)
     category_id = db.Column(db.Integer)
@@ -100,7 +101,7 @@ class Video(db.Model):
     # 播放器url iframe
     player_url = db.Column(db.Text)
     # 统计
-    view_count = db.Column(db.Integer)
+    view_count = db.Column(db.BigInteger)
     like_count = db.Column(db.Integer)
     dislike_count = db.Column(db.Integer)
     favorite_count = db.Column(db.Integer)
@@ -123,7 +124,7 @@ class Word(db.Model):
     __tablename__ = "word"
 
     id = db.Column(db.Integer, primary_key=True)
-    text= db.Column(db.String(30))
+    text= db.Column(db.String(30), unique=True)
     phonetic = db.Column(db.String(30))
     base_form = db.Column(db.String(30))
     # times = db.Column(db.Integer)
@@ -141,7 +142,7 @@ class Channel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     channel_id = db.Column(db.String(40), unique=True)
-    channel_title = db.Column(db.String(40))
+    channel_title = db.Column(db.Text)
     description = db.Column(db.Text)
     # 2009-10-01T17:49:50.000Z
     published_at = db.Column(db.String(24))
@@ -156,9 +157,9 @@ class Channel(db.Model):
     branding_settings = db.Column(db.JSON)
     status = db.Column(db.JSON)
     # statistics brandingSettings,contentDetails,contentOwnerDetails,invideoPromotion,localizations,status,topicDetails
-    view_count = db.Column(db.Integer)
-    comment_count = db.Column(db.Integer)
-    subscriber_count = db.Column(db.Integer)
+    view_count = db.Column(db.BigInteger)
+    comment_count = db.Column(db.BigInteger)
+    subscriber_count = db.Column(db.BigInteger)
     hidden_subscriber_count = db.Column(db.Boolean)
     video_count = db.Column(db.Integer)
     #
@@ -201,7 +202,7 @@ def test_db():
     print video.video_id
 
 if __name__ == "__main__":
-    # db.create_all()
+    db.create_all()
     # test_db()
     pass
     # test()
