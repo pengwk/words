@@ -65,18 +65,19 @@ def simple_token(text, ):
                     "]",
                     "{",
                     "}",
-                    "“",  #
-                    "”",  # 中文引号
-                    "‘",  # 中文单引号
+                    u"“",  #
+                    u"”",  # 中文引号
+                    u"‘",  # 中文单引号
                     # "’",  不能替换成空格 world’s world's
-                    "。",  # 句号
-                    "，",  # 逗号
-                    "…",   # 英文省略号
-                    "……",  #
+                    u"。",  # 句号
+                    u"，",  # 逗号
+                    u"…",   # 英文省略号
+                    u"……",  #
                     )
+
     for punctuation in punctuations:
         _text = _text.replace(punctuation, ' ')
-    _text = _text.replace("’", "'")
+    _text = _text.replace(u"’", "'")
     return _text.split()
 
 
