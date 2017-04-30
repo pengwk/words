@@ -26,7 +26,7 @@ __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost/words?charset=utf8'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost/words?charset=utf8mb4'
 db = SQLAlchemy(app)
 
 video_word_map_table = db.Table('video_word_maps',
