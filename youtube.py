@@ -196,7 +196,9 @@ def get_video_detail(video_id):
                               "id": video_id,
                           },
                           verify=False,)
-    items = result.json().get("item")[0]
+    items = result.json().get("item")
+    from pprint import pprint
+    pprint(result.json())
     if items is None:
         raise Exception("Quotas have reached")
     return items[0]

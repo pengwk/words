@@ -14,6 +14,7 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.mysql import LONGTEXT
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
@@ -54,9 +55,9 @@ class Video(db.Model):
     # 格式     YYYY-MM-DDThh:mm:ss.sZ
     published_at = db.Column(db.String(40))
     # 通过API获取的原始数据
-    xml_transcript = db.Column(db.Text)
+    xml_transcript = db.Column(LONGTEXT)
     # 不包含换行符
-    clean_transcript = db.Column(db.Text)
+    clean_transcript = db.Column(LONGTEXT)
     # 视频的字数，句子数，时长，短语，单词
     # 多对多
     words = db.relationship("Word",

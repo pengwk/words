@@ -192,12 +192,12 @@ def download_transcript(video):
     from transcript import download_transcript as dt
     from models import db
     from models import Video
-    session = db.session()
+    session = db.session
     video = session.query(Video).filter(Video.video_id==video.video_id).one()
     video.xml_transcript = dt(video.video_id)
-    # print "                    {}".format(video.xml_transcript[0:10])
+    print "{}:{}".format(video.video_id, video.xml_transcript[0:10])
     # session.add()
-    print video.video_id
+
     session.commit()
     return None
 
@@ -220,7 +220,7 @@ def analysis_transcript(video):
     from database import get_or_create
     for word in tokens:
         # 记录非全数字，全字母，长度超过15的词
-        if len(word) > 15 or not word.isalpha() or not word.isalnum():
+        if len(word) > 20 or not word.isalpha() or not word.isalnum():
             logging.debug(word)
             break
         if word.istitle() is False:
@@ -239,26 +239,16 @@ def analysis_transcript(video):
     from transcript import statistic_frequency
     video.word_frequency = statistic_frequency(tokens)
     session.commit()
+    return None
 
 
 def duration_to_min(duration, ):
     """
     duration的例子PT3M32S,返回分钟数
     """
-    print duration
-    # bug PT35S
-    if duration.count("M") == 0:
-        _min = 0
-        second = duration[2:-1]
-        return (int(_min) + int(second)) / 60.0
-    _min = duration.split("M")[0][2:]
-    second = duration.split("M")[1][:-1]
-
-    if _min == "":
-        _min = 0
-    if second == "":
-        second = 0
-    return (int(_min) + int(second)) / 60.0
+    import isodate
+    _ = isodate.parse_duration(duration)
+    return _.total_seconds()/60.0
 
 
 # 获取所有词的原形，检查包含符号的词，并输出到文件中
@@ -335,13 +325,15 @@ def main():
     # thread_pool(download_video_detail, video_list, 15)
 
     # 下载字幕 None表示没有下载，""代表没有
-    video_list = db.session.query(Video).filter(Video.xml_transcript == None).all()
+    # video_list = db.session.query(Video).filter(Video.xml_transcript == None).all()
     # [download_transcript(video) for video in video_list]
-    thread_pool(download_transcript, video_list, 10)
+    # thread_pool(download_transcript, video_list, 10)
 
     # 分析字幕
     video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<")).all()
-    process_pool(analysis_transcript, video_list, 2)
+    # print "ok"
+    # [analysis_transcript(video) for video in video_list]
+    process_pool(analysis_transcript, video_list, 4)
 
     # CET6
     process_pool(statistics_for_cet_six, video_list, 2)
@@ -355,13 +347,18 @@ def restart():
     except requests.exceptions.SSLError as e:
         print e
         import time
-        time.sleep(2)
+        time.sleep(120)
         restart()
-    except KeyError as e:
+    except requests.exceptions.ConnectionError as e:
+        print e
+        import time
+        time.sleep(120)
+        restart()
+    except Exception as e:
         print e
 if __name__ == '__main__':
-    # restart()
-    main()
+    restart()
+    # main()
     # from models import Video
     # video = Video.query.filter_by(video_id='xGSOVE20xa0').first()
     # download_video_detail(video)
