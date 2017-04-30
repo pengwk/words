@@ -196,9 +196,10 @@ def get_video_detail(video_id):
                               "id": video_id,
                           },
                           verify=False,)
-    items = result.json().get("item")
+    items = result.json().get("items")
     from pprint import pprint
-    pprint(result.json())
+    # pprint(items)
+    # google api 会出现错误，要包含这个不然发出错误的会配额已满消息
     if items is None:
         raise Exception("Quotas have reached")
     return items[0]

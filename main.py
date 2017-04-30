@@ -320,9 +320,9 @@ def main():
     # 基本信息
     from models import Video
     from models import db
-    # video_list = db.session.query(Video).order_by(Video.id).all()
+    video_list = db.session.query(Video).order_by(Video.id).all()
     # [download_video_detail(video) for video in video_list]
-    # thread_pool(download_video_detail, video_list, 15)
+    thread_pool(download_video_detail, video_list, 4)
 
     # 下载字幕 None表示没有下载，""代表没有
     # video_list = db.session.query(Video).filter(Video.xml_transcript == None).all()
@@ -333,7 +333,8 @@ def main():
     video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<")).all()
     # print "ok"
     # [analysis_transcript(video) for video in video_list]
-    process_pool(analysis_transcript, video_list, 4)
+    # process_pool(analysis_transcript, video_list, 4)
+    process_pool(analysis_with_trace, video_list, 4)
 
     # CET6
     process_pool(statistics_for_cet_six, video_list, 2)
@@ -356,9 +357,31 @@ def restart():
         restart()
     except Exception as e:
         print e
+
+
+def analysis_with_trace(video):
+    import traceback
+    import sys
+    try:
+        analysis_transcript(video)
+    except:
+        except_type, except_class, tb = sys.exc_info()
+        print except_type, except_class, traceback.extract_tb(tb)
+
+
+def main_with_trace():
+    import traceback
+    import sys
+    try:
+        main()
+    except:
+        except_type, except_class, tb = sys.exc_info()
+        print except_type, except_class, traceback.extract_tb(tb)
+
+
 if __name__ == '__main__':
     restart()
-    # main()
+    # main_with_trace()
     # from models import Video
     # video = Video.query.filter_by(video_id='xGSOVE20xa0').first()
     # download_video_detail(video)
