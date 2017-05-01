@@ -26,7 +26,8 @@ __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost/words?charset=utf8mb4'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:nopassword@localhost/words?charset=utf8mb4'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
 video_word_map_table = db.Table('video_word_maps',
@@ -203,7 +204,7 @@ def test_db():
     print video.video_id
 
 if __name__ == "__main__":
-    db.create_all()
-    # test_db()
+    # db.create_all()
+    test_db()
     pass
     # test()

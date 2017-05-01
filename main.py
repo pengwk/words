@@ -118,6 +118,7 @@ def download_video_detail(video):
     """
     """
     from youtube import get_video_detail
+    print video.id
     detail = get_video_detail(video.video_id)
     # 获取video对象
     from models import db, Video
@@ -147,7 +148,8 @@ def download_video_detail(video):
         video.duration = content_details.get("duration")
         video.dimension = content_details.get("dimension")
         video.definition = content_details.get("definition")
-        video.has_caption = content_details.get("caption")
+        # todo
+        video.has_caption = True if content_details.get("caption") == "true" else False
         video.is_licensed_content = content_details.get("licensedContent")
         video.projection = content_details.get("projection")
         # snippet
@@ -320,8 +322,9 @@ def main():
     # 基本信息
     from models import Video
     from models import db
-    video_list = db.session.query(Video).order_by(Video.id).all()
+    video_list = db.session.query(Video).filter(Video.title == None).order_by(Video.id).all()
     # [download_video_detail(video) for video in video_list]
+    print db.session.query(Video).filter(Video.title == None).count()
     thread_pool(download_video_detail, video_list, 4)
 
     # 下载字幕 None表示没有下载，""代表没有

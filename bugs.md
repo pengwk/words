@@ -27,6 +27,11 @@ Exception in thread Thread-10 (most likely raised during interpreter shutdown):
 print s.decode("utf-8")
 output = u"Game Picks in 60 Seconds (Week 7) ⏱ 🏈  | NFL"
 
+s = u"\U0001F336"
+print s
+🌶
+
+
 ```
 Unicode: U+1F3C8
 ALTER TABLE Tablename CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
@@ -36,6 +41,26 @@ collate是字符的比较方法，排序会用到
 # 更新数据库URL的charset=utf8mb4
 e = create_engine("mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4”)
 ```
+
+## 数据库
+
+OperationalError: (2019, "Can't initialize character set utf8mb4 (path: C:\\mysql\\\\share\\charsets\\)")
+MySQLdb最高只支持MYSQL5.5，我用的是5.7，使用utf8mb4编码时就不支持，使用pymysql
+MySQL-3.23 through 5.5 and Python-2.4 through 2.7 are currently supported. Python-3.0 will be supported in a future release. PyPy is supported.
+
+#### filter
+
+使用`==`和`!=`比较，不能用is 和is not
+
+use `==` and `!=` to compare, don't use `is` and `is not` when compare to `None`
+
+
+## hasCaption 错误
+ 
+ `video.has_caption = content_details.get("caption")`
+ `caption`key 对应的是字符串的 `"true"` `"false"` ，设置的时候就错了，自动类型转换把所有的都判定为了1
+ 
+ 修复``
 
 ## invalid literal for int() with base 10: '1H32'
 
