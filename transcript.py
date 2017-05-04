@@ -117,11 +117,8 @@ def statistic_frequency(tokens=None, text=None, is_json=True):
     data = {}
     if tokens is None:
         tokens = simple_token(text)
-    for word in tokens:
-        if word not in data:
-            data[word] = 1
-        else:
-            data[word] += 1
+    import collections
+    data = collections.Counter(tokens)
     if is_json is True:
         return json.dumps(data)
     else:

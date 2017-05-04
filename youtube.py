@@ -24,6 +24,18 @@ __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
+# for EOF ERROR
+
+import ssl
+from functools import wraps
+def sslwrap(func):
+    @wraps(func)
+    def bar(*args, **kw):
+        kw['ssl_version'] = ssl.PROTOCOL_TLSv1
+        return func(*args, **kw)
+    return bar
+
+ssl.wrap_socket = sslwrap(ssl.wrap_socket)
 
 DEVELOPER_KEY = "AIzaSyCWxbyw93TpHw_SSZUq6VPlU8EYzbQ8BAw"
 YOUTUBE_API_SERVICE_NAME = "youtube"
@@ -86,6 +98,42 @@ def search_channels(max_channel_count):
 
     return [channel.get("id").get("channelId") for channel in channel_list]
 
+
+def search_videos():
+    part = "id"
+    channel_list = []
+    result = requests.get("https://www.googleapis.com/youtube/v3/search",
+                          params={
+                              "key": DEVELOPER_KEY,
+                              "part": part,
+                              "maxResults": 50,
+                              "type": "video",
+                              "relevanceLanguage": "en",
+                              "safeSearch": "strict",
+                          },
+                          verify=False,
+
+                          )
+    while 1:
+        channel_list.extend(result.json()['items'])
+        if len(channel_list) >= max_channel_count:
+            break
+        try:
+            page_token = result.json()['nextPageToken']
+        except KeyError:
+            break
+        result = requests.get("https://www.googleapis.com/youtube/v3/search",
+                              params={
+                                  "key": DEVELOPER_KEY,
+                                  "part": part,
+                                  "maxResults": 50,
+                                  "type": "video",
+                                  "relevanceLanguage": "en",
+                                  "safeSearch": "strict",
+                                  "pageToken": page_token
+                              },
+                              verify=False,)
+    return None
 
 def get_channel_details(channel_id):
     """
