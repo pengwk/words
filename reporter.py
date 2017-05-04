@@ -30,9 +30,10 @@ def report_video_():
     details_count = Video.query.filter(Video.title != None).count()
     xml_count = Video.query.filter(Video.xml_transcript.startswith("<")).count()
     none_transcript = Video.query.filter(Video.xml_transcript == None).count()
+    clean_transcript = Video.query.filter(Video.clean_transcript != None).count()
 
-    report_str = u"视频总数：{}\n已下载视频资料数：{}\n有字幕数：{}尚未下载字幕数：{}"
-    print(report_str.format(video_count, details_count, xml_count, none_transcript))
+    report_str = u"视频总数：{}\n已下载视频资料数：{}\n有字幕数：{}尚未下载字幕数：{} 词频分析完成数：{}"
+    print(report_str.format(video_count, details_count, xml_count, none_transcript, clean_transcript))
     return None
 
 

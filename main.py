@@ -148,7 +148,6 @@ def download_video_detail(video):
         video.duration = content_details.get("duration")
         video.dimension = content_details.get("dimension")
         video.definition = content_details.get("definition")
-        # todo
         video.has_caption = True if content_details.get("caption") == "true" else False
         video.is_licensed_content = content_details.get("licensedContent")
         video.projection = content_details.get("projection")
@@ -195,12 +194,13 @@ def download_transcript(video):
     from models import db
     from models import Video
     session = db.session
-    video = session.query(Video).filter(Video.video_id==video.video_id).one()
+    video = session.query(Video).filter(Video.video_id == video.video_id).one()
     video.xml_transcript = dt(video.video_id)
     print "{}:{}".format(video.video_id, video.xml_transcript[0:10])
     # session.add()
 
     session.commit()
+    session.remove()
     return None
 
 
@@ -241,6 +241,7 @@ def analysis_transcript(video):
     from transcript import statistic_frequency
     video.word_frequency = statistic_frequency(tokens)
     session.commit()
+    session.remove()
     return None
 
 
@@ -322,25 +323,26 @@ def main():
     # 基本信息
     from models import Video
     from models import db
-    video_list = db.session.query(Video).filter(Video.title == None).order_by(Video.id).all()
+    # video_list = db.session.query(Video).filter(Video.title == None).order_by(Video.id).all()
     # [download_video_detail(video) for video in video_list]
-    print db.session.query(Video).filter(Video.title == None).count()
-    thread_pool(download_video_detail, video_list, 4)
+    # print db.session.query(Video).filter(Video.title == None).count()
+    # thread_pool(download_video_detail, video_list, 4)
 
     # 下载字幕 None表示没有下载，""代表没有
     # video_list = db.session.query(Video).filter(Video.xml_transcript == None).all()
-    # [download_transcript(video) for video in video_list]
-    # thread_pool(download_transcript, video_list, 10)
+    # print db.session.query(Video).filter(Video.xml_transcript == None).count()
+    # # [download_transcript(video) for video in video_list]
+    # thread_pool(download_transcript, video_list, 8)
 
     # 分析字幕
-    video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<")).all()
+    video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<"), Video.clean_transcript != None).all()
     # print "ok"
     # [analysis_transcript(video) for video in video_list]
     # process_pool(analysis_transcript, video_list, 4)
-    process_pool(analysis_with_trace, video_list, 4)
+    # process_pool(analysis_with_trace, video_list, 4)
 
     # CET6
-    process_pool(statistics_for_cet_six, video_list, 2)
+    process_pool(statistics_for_cet_six, video_list, 4)
 
 
 def restart():

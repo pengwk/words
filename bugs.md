@@ -3,6 +3,7 @@
 
 exceptions.SSLError: EOF occurred in violation of protocol (_ssl.c:661)
 
+https://docs.python.org/2/library/ssl.html#ssl.SSLEOFError
 exceptions.ConnectionError: ('Connection aborted.', BadStatusLine("''",))
 
 ## TypeError: 
@@ -54,6 +55,8 @@ MySQL-3.23 through 5.5 and Python-2.4 through 2.7 are currently supported. Pytho
 
 use `==` and `!=` to compare, don't use `is` and `is not` when compare to `None`
 
+## pool_size=20, max_overflow=100
+QueuePool limit of size 5 overflow 10 reached, connection timed out, timeout 30
 
 ## hasCaption 错误
  
