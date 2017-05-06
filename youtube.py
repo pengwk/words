@@ -8,6 +8,7 @@
     编写一个函数可以把整个播放列表全部下载下来，
     get_whole_playlist(playListId)
 """
+from __future__ import print_function
 from pprint import pprint
 
 
@@ -28,12 +29,16 @@ __status__ = "BraveHeart"
 
 import ssl
 from functools import wraps
+
+
 def sslwrap(func):
     @wraps(func)
     def bar(*args, **kw):
         kw['ssl_version'] = ssl.PROTOCOL_TLSv1
         return func(*args, **kw)
+
     return bar
+
 
 ssl.wrap_socket = sslwrap(ssl.wrap_socket)
 
@@ -94,46 +99,75 @@ def search_channels(max_channel_count):
                                   "safeSearch": "strict",
                                   "pageToken": page_token
                               },
-                              verify=False,)
+                              verify=False, )
 
     return [channel.get("id").get("channelId") for channel in channel_list]
 
 
-def search_videos():
-    part = "id"
-    channel_list = []
-    result = requests.get("https://www.googleapis.com/youtube/v3/search",
-                          params={
-                              "key": DEVELOPER_KEY,
-                              "part": part,
-                              "maxResults": 50,
-                              "type": "video",
-                              "relevanceLanguage": "en",
-                              "safeSearch": "strict",
-                          },
-                          verify=False,
+def search_videos(max_video_count):
+    """
+    200M内存可以装44500个id
+    :return: a list such as ["ididi", "idididid"]
 
+    result.json() 的结构
+    {u'etag': u'"m2yskBQFythfE4irbTIeOgYYfBU/ZNdWTsc0Ju8PukbfXV3eGecnklA"',
+    u'items': [
+            {u'etag': u'"m2yskBQFythfE4irbTIeOgYYfBU/BDEfjpY3JDutURWxdJdJ8calYuA"',
+             u'id': {u'kind': u'youtube#video', u'videoId': u'nSDgHBxUbVQ'},
+             u'kind': u'youtube#searchResult'},
+            {u'etag': u'"m2yskBQFythfE4irbTIeOgYYfBU/zuVoF_UgDzKd4rLZUAnv2ICc594"',
+             u'id': {u'kind': u'youtube#video', u'videoId': u'c4BLVznuWnU'},
+             u'kind': u'youtube#searchResult'},
+            {u'etag': u'"m2yskBQFythfE4irbTIeOgYYfBU/c9HMnuzitTzhAJSX2G9KBFLgRUQ"',
+             u'id': {u'kind': u'youtube#video', u'videoId': u'GjkFr48jk68'},
+             u'kind': u'youtube#searchResult'},
+            {u'etag': u'"m2yskBQFythfE4irbTIeOgYYfBU/s08U9XV9EZ4Zb1cowMMCr1FduxM"',
+             u'id': {u'kind': u'youtube#video', u'videoId': u'_GgfLZFj6kM'},
+             u'kind': u'youtube#searchResult'}
+             ],
+    u'kind': u'youtube#searchListResponse',
+    u'nextPageToken': u'CDIQAA',
+    u'pageInfo': {u'resultsPerPage': 50, u'totalResults': 1000000},
+    u'regionCode': u'JP'}
+    """
+    part = "id"
+    search_url = "https://www.googleapis.com/youtube/v3/search"
+    commond_params = {"key": DEVELOPER_KEY,
+                      "part": part,
+                      "videoCaption": "closedCaption",
+                      "maxResults": 50,
+                      "type": "video",
+                      "relevanceLanguage": "en",
+                      "safeSearch": "strict",
+                      "regionCode": "US"
+                      }
+    video_list = []
+    result = requests.get(search_url,
+                          params=commond_params,
+                          verify=False,
                           )
     while 1:
-        channel_list.extend(result.json()['items'])
-        if len(channel_list) >= max_channel_count:
+        try:
+            video_list.extend(result.json()['items'])
+        except KeyError:
+            pprint(result.json())
+        if len(video_list) >= max_video_count:
             break
         try:
             page_token = result.json()['nextPageToken']
+            commond_params.update({"pageToken": page_token})
         except KeyError:
             break
-        result = requests.get("https://www.googleapis.com/youtube/v3/search",
-                              params={
-                                  "key": DEVELOPER_KEY,
-                                  "part": part,
-                                  "maxResults": 50,
-                                  "type": "video",
-                                  "relevanceLanguage": "en",
-                                  "safeSearch": "strict",
-                                  "pageToken": page_token
-                              },
-                              verify=False,)
-    return None
+
+        result = requests.get(search_url,
+                              params=commond_params,
+                              verify=False, )
+    return [item.get("id").get("videoId") for item in video_list]
+
+
+def test_search_videos():
+    pprint(search_videos(200))
+
 
 def get_channel_details(channel_id):
     """
@@ -174,8 +208,8 @@ def get_playlist_items(playlist_id):
         try:
             video_list.extend(result.json()['items'])
         except KeyError:
-            print playlist_id
-            print result.json()
+            pprint(playlist_id)
+            pprint(result.json())
         try:
             page_token = result.json()['nextPageToken']
         except KeyError:
@@ -187,10 +221,10 @@ def get_playlist_items(playlist_id):
                                   "playlistId": playlist_id,
                                   "maxResults": 50,
                                   "pageToken": page_token
-                                    },
+                              },
                               verify=False,
                               )
-    
+
     return [video.get("contentDetails").get("videoId") for video in video_list]
 
 
@@ -214,7 +248,7 @@ def test_xml_transcript():
     # no_transcript_video = "qOKwU5BYK08"
     # has_transcript_video = "ytkt2YxGou4"
     no_caption_but_asr = "aXufzJ-Vp8g"
-    print get_xml_transcript(no_caption_but_asr) == ""
+    print(get_xml_transcript(no_caption_but_asr) == "")
 
 
 def get_video_detail(video_id):
@@ -243,7 +277,7 @@ def get_video_detail(video_id):
                               "part": part,
                               "id": video_id,
                           },
-                          verify=False,)
+                          verify=False, )
     items = result.json().get("items")
     from pprint import pprint
     # pprint(items)
@@ -255,9 +289,11 @@ def get_video_detail(video_id):
 
 def test_video_detail():
     video_id = "ytkt2YxGou4"
-    print get_video_detail(video_id)
+    print(get_video_detail(video_id))
+
 
 if __name__ == '__main__':
-    print len(search_channels(100))
+    test_search_videos()
+    # print(len(search_channels(100)))
     # test_video_detail()
     # test_playlist_items()

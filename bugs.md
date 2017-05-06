@@ -71,3 +71,6 @@ QueuePool limit of size 5 overflow 10 reached, connection timed out, timeout 30
 
 没有对时长超过一个小时的支持，需要用正则表达式来提取数据
 
+## {}.update({})
+
+这个操作的返回值是None，不能直接赋值
