@@ -155,9 +155,12 @@ def download_video_detail(video):
         video.title = snippet.get("title")
         video.description = snippet.get("description")
         video.published_at = snippet.get("publishedAt")
-        video.thumbails = snippet.get("thumbails")
+        video.thumbnails = snippet.get("thumbnails")
         video.category_id = _smart_int(snippet.get("categoryId"))
         video._tags = snippet.get("tags")
+        # channel
+        video._channel_id = snippet.get("channelId")
+        video._channel_title = snippet.get("channelTitle")
         # session.add(video)
         session.commit()
     except sqlalchemy.exc.OperationalError as e:
@@ -211,8 +214,11 @@ def analysis_transcript(video):
     from models import db, Video
     session = db.session
     video = session.query(Video).filter(Video.video_id == video.video_id).one()
-    clean_transcript = get_clean_transcript(video.xml_transcript)
-    video.clean_transcript = clean_transcript
+    if video.clean_transcript == None:
+        clean_transcript = get_clean_transcript(video.xml_transcript)
+        video.clean_transcript = clean_transcript
+    else:
+        clean_transcript = video.clean_transcript
     # 分词
     tokens = simple_token(clean_transcript)
     import logging
@@ -335,7 +341,8 @@ def main():
     # thread_pool(download_transcript, video_list, 8)
 
     # 分析字幕
-    video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<"), Video.clean_transcript != None).all()
+    video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<"),
+                                                Video.clean_transcript != None).all()
     # print "ok"
     # [analysis_transcript(video) for video in video_list]
     # process_pool(analysis_transcript, video_list, 4)
@@ -345,21 +352,21 @@ def main():
     process_pool(statistics_for_cet_six, video_list, 4)
 
 
-def restart():
+def restart(func):
     import requests
 
     try:
-        main()
+        func()
     except requests.exceptions.SSLError as e:
         print e
         import time
         time.sleep(120)
-        restart()
+        restart(func)
     except requests.exceptions.ConnectionError as e:
         print e
         import time
         time.sleep(120)
-        restart()
+        restart(func)
     except Exception as e:
         print e
 
@@ -384,8 +391,54 @@ def main_with_trace():
         print except_type, except_class, traceback.extract_tb(tb)
 
 
+def video_first_policy():
+    #
+    # download_video()
+
+    from models import Video, db
+
+    video_list = db.session.query(Video).filter_by(thumbnails=None).all()
+    thread_pool(download_video_detail, video_list, 5)
+    # 下载英文字幕
+    # video_list = db.session.query(Video).filter_by(xml_transcript=None).all()
+    # thread_pool(download_transcript, video_list, 5)
+    # # 分析字幕
+    # video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<"),
+    #                                             Video.clean_transcript == None).all()
+    # process_pool(analysis_transcript, video_list, 4)
+    #
+    # # CET6 分析
+    # video_list = db.session.query(Video).filter(Video.cet_six_word_list == None).all()
+    # process_pool(statistics_for_cet_six, video_list, 4)
+
+
+
+
+
+
+def id_to_db(video_id):
+    from models import Video, db
+    if db.session.query(Video).filter_by(video_id=video_id).count() == 0:
+        video = Video(video_id=video_id)
+        db.session.add(video)
+    db.session.commit()
+    db.session.remove()
+    return None
+
+
+def download_video():
+    from youtube import search_videos
+    video_ids = search_videos(10000)
+    print(u"搜索到{}个视频".format(len(video_ids)))
+    # 存入数据库
+    thread_pool(id_to_db, video_ids, 5)
+    return None
+
+
+
 if __name__ == '__main__':
-    restart()
+
+    restart(video_first_policy)
     # main_with_trace()
     # from models import Video
     # video = Video.query.filter_by(video_id='xGSOVE20xa0').first()

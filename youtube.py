@@ -146,22 +146,27 @@ def search_videos(max_video_count):
                           params=commond_params,
                           verify=False,
                           )
+    _json = result.json()
+    print(u"搜索到的视频总数：{}".format(_json.get("pageInfo").get("totalResults")))
     while 1:
         try:
-            video_list.extend(result.json()['items'])
+            video_list.extend(_json['items'])
         except KeyError:
-            pprint(result.json())
+            pprint(_json)
         if len(video_list) >= max_video_count:
             break
         try:
-            page_token = result.json()['nextPageToken']
+            page_token = _json['nextPageToken']
             commond_params.update({"pageToken": page_token})
         except KeyError:
+            pprint(_json)
+            print(u"KeyError退出 nextPageToken")
             break
 
         result = requests.get(search_url,
                               params=commond_params,
                               verify=False, )
+        _json = result.json()
     return [item.get("id").get("videoId") for item in video_list]
 
 

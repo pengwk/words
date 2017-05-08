@@ -16,6 +16,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.mysql import LONGTEXT
 
+import os
+from flask import Flask, render_template_string
+from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
+from flask_user import login_required, UserManager, UserMixin, SQLAlchemyAdapter
+
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
 __credits__ = [""]
@@ -25,9 +31,31 @@ __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:nopassword@localhost/words?charset=utf8mb4'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+
+class ConfigClass(object):
+    # Flask settings
+    SECRET_KEY =              os.getenv('SECRET_KEY',       'THIS IS AN INSECURE SECRET')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL',     'mysql+pymysql://root:nopassword@localhost/words_2?charset=utf8mb4')
+    CSRF_ENABLED = True
+
+    # Flask-Mail settings
+    MAIL_USERNAME =           os.getenv('MAIL_USERNAME',        'handsome_boy@pengwk.com')
+    MAIL_PASSWORD =           os.getenv('MAIL_PASSWORD',        'W#ER$RFS#RT*1d')
+    MAIL_DEFAULT_SENDER =     os.getenv('MAIL_DEFAULT_SENDER',  '"handsome_boy" <handsome_boy@pengwk.com>')
+    MAIL_SERVER =             os.getenv('MAIL_SERVER',          'smtp.exmail.qq.com')
+    MAIL_PORT =           int(os.getenv('MAIL_PORT',            '465'))
+    MAIL_USE_SSL =        int(os.getenv('MAIL_USE_SSL',         True))
+
+    # Flask-User settings
+    USER_APP_NAME        = u"静听"                # Used by email templates
+
+app = Flask(__name__,
+            static_url_path='/static',
+            template_folder='./templates',
+            )
+app.config.from_object(__name__+'.ConfigClass')
+mail = Mail(app)
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 video_word_map_table = db.Table('video_word_maps',
@@ -68,6 +96,9 @@ class Video(db.Model):
     # 多个视频对应一个channel 多对一
     channel_id = db.Column(db.Integer, db.ForeignKey("channel.id"))
     channel = db.relationship('Channel', backref="video")
+
+    _channel_id = db.Column(db.String(60))
+    _channel_title = db.Column(db.String(100))
 
     # 一个列表多个视频，一个视频多个列表 多对多
     playlists = db.relationship("Playlist",
@@ -193,9 +224,38 @@ class WatchRecord(db.Model):
     video_id = db.Column(db.Integer, db.ForeignKey("video.id"))
     video = db.relationship("Video", backref="video", uselist=False)
 
+# Define User DataModel
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
 
-def main():
-    return None
+    # User email information
+    email = db.Column(db.String(255), nullable=False, unique=True)
+    confirmed_at = db.Column(db.DateTime())
+
+    # User information
+    is_enabled = db.Column(db.Boolean(), nullable=False, default=False)
+    first_name = db.Column(db.String(50), nullable=False, default='')
+    last_name = db.Column(db.String(50), nullable=False, default='')
+
+    def is_active(self):
+      return self.is_enabled
+
+# Define UserAuth DataModel. Make sure to add flask_user UserMixin!!
+class UserAuth(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
+
+    # User authentication information
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False, default='')
+
+    # Relationships
+    user = db.relationship('User', uselist=False, foreign_keys=user_id)
+
+
+# Setup Flask-User
+db_adapter = SQLAlchemyAdapter(db, User, UserAuthClass=UserAuth)
+user_manager = UserManager(db_adapter, app)
 
 
 def test_db():
@@ -204,7 +264,7 @@ def test_db():
     print video.video_id
 
 if __name__ == "__main__":
-    # db.create_all()
-    test_db()
+    db.create_all()
+    # test_db()
     pass
     # test()
