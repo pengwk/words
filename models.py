@@ -45,6 +45,7 @@ class ConfigClass(object):
     MAIL_SERVER =             os.getenv('MAIL_SERVER',          'smtp.exmail.qq.com')
     MAIL_PORT =           int(os.getenv('MAIL_PORT',            '465'))
     MAIL_USE_SSL =        int(os.getenv('MAIL_USE_SSL',         True))
+    TEMPLATES_AUTO_RELOAD = os.getenv('TEMPLATES_AUTO_RELOAD', True)
 
     # Flask-User settings
     USER_APP_NAME        = u"静听"                # Used by email templates

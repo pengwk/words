@@ -400,16 +400,16 @@ def video_first_policy():
     video_list = db.session.query(Video).filter_by(thumbnails=None).all()
     thread_pool(download_video_detail, video_list, 5)
     # 下载英文字幕
-    # video_list = db.session.query(Video).filter_by(xml_transcript=None).all()
-    # thread_pool(download_transcript, video_list, 5)
-    # # 分析字幕
-    # video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<"),
-    #                                             Video.clean_transcript == None).all()
-    # process_pool(analysis_transcript, video_list, 4)
-    #
-    # # CET6 分析
-    # video_list = db.session.query(Video).filter(Video.cet_six_word_list == None).all()
-    # process_pool(statistics_for_cet_six, video_list, 4)
+    video_list = db.session.query(Video).filter_by(xml_transcript=None).all()
+    thread_pool(download_transcript, video_list, 5)
+    # 分析字幕
+    video_list = db.session.query(Video).filter(Video.xml_transcript.startswith("<"),
+                                                Video.clean_transcript == None).all()
+    process_pool(analysis_transcript, video_list, 4)
+
+    # CET6 分析
+    video_list = db.session.query(Video).filter(Video.cet_six_word_list == None).all()
+    process_pool(statistics_for_cet_six, video_list, 4)
 
 
 

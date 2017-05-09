@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %} {{video.title}} {% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="./../static/echarts.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="show-top-grids">
+				<div class="col-sm-8 single-left">
+					<div class="song">
+						<div class="video-grid">
+							<iframe src="https://www.youtube.com/embed/{{video.video_id}}" allowfullscreen></iframe>
+						</div>
+					</div>
+
+					<div class="clearfix"> </div>
+					<div class="published">
+						<script src="./../static/for_video/js/jquery-1.11.1.min.js"></script>
+							<script>
+								$(document).ready(function () {
+									size_li = $("#myList li").size();
+									x=10;
+									$('#myList li:lt('+x+')').show();
+									$('#loadMore').click(function () {
+										x= (x+1 <= size_li) ? x+1 : size_li;
+										$('#myList li:lt('+x+')').show();
+									});
+									$('#showLess').click(function () {
+										x=(x-1<0) ? 1 : x-1;
+										$('#myList li').not(':lt('+x+')').hide();
+									});
+								});
+							</script>
+							<div class="load_more">
+								<ul id="myList">
+									<li>
+										<h4>Published on 15 June 2015</h4>
+										<p>描述</p>
+									</li>
+									<li><p>语速：{{video.speed}}</p></li>
+                   					 <li><p>单词数：{{video.word_number}}</p></li>
+									<li><p>字幕：{{video.clean_transcript}}</p></li>
+
+									<li>
+										<div class="load-grids">
+											<div class="load-grid">
+												<p>Category</p>
+											</div>
+											<div class="load-grid">
+												<a href="movies.html">Entertainment</a>
+											</div>
+											<div class="clearfix"> </div>
+										</div>
+									</li>
+								</ul>
+							</div>
+					</div>
+					<div class="statictcs">
+          <div id="word_frequency" style="width: 600px;height:800px;"></div>
+					</div>
+          <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('word_frequency'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '视频词频统计',
+                subtext: ''
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['2012年']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                //data: ['love','you','am','hand','some','body']
+                data: {{keys|safe}}
+            },
+            series: [
+                {
+                    name: '本视频',
+                    type: 'bar',
+                    data: {{frequency.values()}}
+                }
+            ]
+        };
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+      </script>
+				</div>
+				<div class="col-md-4 single-right">
+					<h3>接下来观看</h3>
+					<div class="single-grid-right">
+						<div class="single-right-grids">
+							<div class="col-md-4 single-right-grid-left">
+								<a href="single.html"><img src="./../static/for_video/images/r1.jpg" alt="" /></a>
+							</div>
+							<div class="col-md-8 single-right-grid-right">
+								<a href="single.html" class="title"> Nullam interdum metus</a>
+								<p class="author"><a href="#" class="author">John Maniya</a></p>
+								<p class="views">2,114,200 views</p>
+							</div>
+							<div class="clearfix"> </div>
+						</div>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+</div>
+{% endblock %}
+
