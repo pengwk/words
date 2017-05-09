@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block home_active %}active{% endblock %}">
+
+
+{% block content %}
+<div class="main-grids">
+				<div class="top-grids">
+					<div class="recommended-info">
+						<h3>为你推荐</h3>
+					</div>
+					<!--template for 3 videos item show-->
+					{% for video in recommend_videos[0:3] %}
+					<div class="col-md-4 resent-grid recommended-grid slider-top-grids">
+						<div class="resent-grid-img recommended-grid-img">
+							<a href="watch?v={{ video.video_id }}"><img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" /></a>
+							<div class="time">
+								<p>{{ video.duration[2:] }}</p>
+							</div>
+							<div class="clck">
+								<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+							</div>
+						</div>
+						<div class="resent-grid-info recommended-grid-info">
+							<h3><a href="" class="title title-info">{{video.title}}</a></h3>
+							<ul>
+								<li><p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p></li>
+								<li class="right-list"><p class="views views-info">{{ video.view_count }} views</p></li>
+							</ul>
+						</div>
+					</div>
+					{% endfor %}
+
+					<div class="clearfix"> </div>
+				</div>
+				<div class="recommended">
+					<div class="recommended-grids">
+						<div class="recommended-info">
+							<h3>轮播展示</h3>
+						</div>
+						<script src="./../static/for_video/js/responsiveslides.min.js"></script>
+						 <script>
+							// You can also use "$(window).load(function() {"
+							$(function () {
+							  // Slideshow 4
+							  $("#slider3").responsiveSlides({
+								auto: true,
+								pager: false,
+								nav: true,
+								speed: 500,
+								namespace: "callbacks",
+								before: function () {
+								  $('.events').append("<li>before event fired.</li>");
+								},
+								after: function () {
+								  $('.events').append("<li>after event fired.</li>");
+								}
+							  });
+
+							});
+						  </script>
+						<div  id="top" class="callbacks_container">
+							<ul class="rslides" id="slider3">
+								<!--repeat 3 times 3 li-->
+
+								<li>
+									<div class="animated-grids">
+                                        {% for video in slides_videos[0:4] %}
+										<div class="col-md-3 resent-grid recommended-grid slider-first">
+											<div class="resent-grid-img recommended-grid-img">
+												<a href="watch?v={{ video.video_id }}">
+                                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                                </a>
+												<div class="time small-time slider-time">
+													<p>{{ video.duration[2:] }}</p>
+												</div>
+												<div class="clck small-clck">
+													<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+												</div>
+											</div>
+											<div class="resent-grid-info recommended-grid-info">
+												<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+												<div class="slid-bottom-grids">
+													<div class="slid-bottom-grid">
+														<p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p>
+													</div>
+													<div class="slid-bottom-grid slid-bottom-right">
+														<p class="views views-info">2,114,200 views</p>
+													</div>
+													<div class="clearfix"> </div>
+												</div>
+											</div>
+										</div>
+										{% endfor %}
+										<div class="clearfix"> </div>
+									</div>
+								</li>
+								<li>
+									<div class="animated-grids">
+                                        {% for video in slides_videos[4:8] %}
+										<div class="col-md-3 resent-grid recommended-grid slider-first">
+											<div class="resent-grid-img recommended-grid-img">
+												<a href="watch?v={{ video.video_id }}">
+                                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                                </a>
+												<div class="time small-time slider-time">
+													<p>{{ video.duration[2:] }}</p>
+												</div>
+												<div class="clck small-clck">
+													<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+												</div>
+											</div>
+											<div class="resent-grid-info recommended-grid-info">
+												<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+												<div class="slid-bottom-grids">
+													<div class="slid-bottom-grid">
+														<p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p>
+													</div>
+													<div class="slid-bottom-grid slid-bottom-right">
+														<p class="views views-info">2,114,200 views</p>
+													</div>
+													<div class="clearfix"> </div>
+												</div>
+											</div>
+										</div>
+										{% endfor %}
+										<div class="clearfix"> </div>
+									</div>
+								</li>
+								<li>
+									<div class="animated-grids">
+                                        {% for video in slides_videos[8:12] %}
+										<div class="col-md-3 resent-grid recommended-grid slider-first">
+											<div class="resent-grid-img recommended-grid-img">
+												<a href="watch?v={{ video.video_id }}">
+                                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                                </a>
+												<div class="time small-time slider-time">
+													<p>{{ video.duration[2:] }}</p>
+												</div>
+												<div class="clck small-clck">
+													<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+												</div>
+											</div>
+											<div class="resent-grid-info recommended-grid-info">
+												<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+												<div class="slid-bottom-grids">
+													<div class="slid-bottom-grid">
+														<p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p>
+													</div>
+													<div class="slid-bottom-grid slid-bottom-right">
+														<p class="views views-info">2,114,200 views</p>
+													</div>
+													<div class="clearfix"> </div>
+												</div>
+											</div>
+										</div>
+										{% endfor %}
+										<div class="clearfix"> </div>
+									</div>
+								</li>
+
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!--repeat 2 times-->
+				<div class="recommended">
+					<div class="recommended-grids">
+						<div class="recommended-info">
+							<h3>顺便看看</h3>
+						</div>
+                        {% for video in bottom_videos[0:4] %}
+						<div class="col-md-3 resent-grid recommended-grid">
+							<div class="resent-grid-img recommended-grid-img">
+								<a href="watch?v={{ video.video_id }}">
+                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                </a>
+								<div class="time small-time">
+									<p>{{ video.duration[2:] }}</p>
+								</div>
+								<div class="clck small-clck">
+									<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+								</div>
+							</div>
+							<div class="resent-grid-info recommended-grid-info video-info-grid">
+								<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+								<ul>
+									<li><p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p></li>
+									<li class="right-list"><p class="views views-info">{{ video.view_count }} views</p></li>
+								</ul>
+							</div>
+						</div>
+                        {% endfor %}
+						<div class="clearfix"> </div>
+					</div>
+					<div class="recommended-grids">
+                        {% for video in bottom_videos[4:8] %}
+						<div class="col-md-3 resent-grid recommended-grid">
+							<div class="resent-grid-img recommended-grid-img">
+								<a href="watch?v={{ video.video_id }}">
+                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                </a>
+								<div class="time small-time">
+									<p>2:34</p>
+								</div>
+								<div class="clck small-clck">
+									<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+								</div>
+							</div>
+							<div class="resent-grid-info recommended-grid-info video-info-grid">
+								<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+								<ul>
+									<li><p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p></li>
+									<li class="right-list"><p class="views views-info">{{ video.view_count }} views</p></li>
+								</ul>
+							</div>
+						</div>
+                        {% endfor %}
+						<div class="clearfix"> </div>
+					</div>
+				</div>
+			</div>
+{% endblock %}

@@ -33,11 +33,15 @@ from flask import render_template
 def videos():
     from models import Video, db
     videos = db.session.query(Video).filter(Video.xml_transcript!="").all()
-    return render_template("video_index.html", videos=videos)
+    return render_template("home.html",
+                           recommend_videos=videos[0:3],
+                           slides_videos=videos[4:16],
+                           bottom_videos=videos[17:25],
+                           )
 
 
 @app.route("/watch")
-@login_required
+# @login_required
 def watch_video():
     from models import Video, db
     video_id = request.args.get("v")
@@ -45,7 +49,22 @@ def watch_video():
     import json
     frequency = json.loads(video.word_frequency)
     keys = json.dumps(frequency.keys())
-    return render_template("video_single.html", video=video, frequency=frequency, keys=keys)
+    return render_template("watch.html", video=video, frequency=frequency, keys=keys)
+
+
+@app.route("/i")
+def i():
+    return "I"
+
+
+@app.route("/history")
+def history():
+    return "history"
+
+
+@app.route("/statistics")
+def statistics():
+    return "statistics"
 
 
 @app.route('/<path:path>')
