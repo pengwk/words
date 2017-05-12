@@ -1,7 +1,7 @@
-Dear User,
+亲爱的用户,
 
 {% block message %}
 {% endblock %}
 
-Sincerely,
+真诚的,
 {{ app_name }}
