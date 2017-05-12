@@ -1,15 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %} {% endblock %}
+{% block title %}历史记录{% endblock %}
 
-{% block head %} {% endblock %}
+{% block history_active %}active{% endblock %}
 
-{% block home_active %} {% endblock %}">
+{% block content %}
+			<div class="show-top-grids">
+				<div class="main-grids news-main-grids">
+					<div class="recommended-info">
+						<h3>我的观看历史</h3>
+						<p class="history-text">
+						</p>
+                        {% for video in videos %}
+						<div class="history-grids">
+							<div class="col-md-2 history-left">
 
-{% block i_active %} {% endblock %}">
+									<img src="https://i.ytimg.com/vi/{{ video.video_id }}/default.jpg" alt="" />
 
-{% block history_active %} {% endblock %}
-
-{% block statistics_active %} {% endblock %}
-
-{% block content %} {% endblock %}
+							</div>
+							<div class="col-md-8 history-right">
+								<h5><a href="watch?v={{ video.video_id }}">{{ video.title }}</a></h5>
+								<p>{{ video.description[0:100] }}</p>
+                            </div>
+							<div class="clearfix"> </div>
+						</div>
+                        {% endfor %}
+					</div>
+				</div>
+			</div>
+{% endblock %}

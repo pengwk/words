@@ -7,7 +7,7 @@
     Python Version: 2.7.10
 """
 from flask import Flask, request, send_from_directory
-from flask_user import login_required, UserManager, UserMixin, SQLAlchemyAdapter
+from flask_user import login_required, UserManager, UserMixin, SQLAlchemyAdapter, current_user
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
@@ -19,7 +19,9 @@ __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
 # set the project root directory as the static folder, you can set others.
-from models import app
+from models import app, User
+
+from models import Video, db, History
 
 @app.route("/")
 def hello():
@@ -30,9 +32,13 @@ from flask import render_template
 
 
 @app.route("/home")
-def videos():
-    from models import Video, db
-    videos = db.session.query(Video).filter(Video.xml_transcript!="").all()
+@login_required
+def home():
+    watched_videos = current_user.watched_videos
+
+    videos = db.session.query(Video).filter(Video.xml_transcript != "",
+                                           ~Video.id.in_([video.id for video in watched_videos])
+                                            )
     return render_template("home.html",
                            recommend_videos=videos[0:3],
                            slides_videos=videos[4:16],
@@ -40,31 +46,47 @@ def videos():
                            )
 
 
+# werghWD0_
 @app.route("/watch")
-# @login_required
+@login_required
 def watch_video():
-    from models import Video, db
     video_id = request.args.get("v")
-    video = db.session.query(Video).filter(Video.video_id==video_id).one()
+    video = db.session.query(Video).filter(Video.video_id == video_id).one()
     import json
     frequency = json.loads(video.word_frequency)
     keys = json.dumps(frequency.keys())
+    # 增加历史记录
+    history = History(video=video, user=current_user)
+    db.session.add(history)
+    db.session.commit()
+    # 增加watched_video
+    current_user.watched_videos.append(video)
+    db.session.commit()
     return render_template("watch.html", video=video, frequency=frequency, keys=keys)
 
 
 @app.route("/i")
+@login_required
 def i():
-    return "I"
+    return render_template("i.html")
 
 
 @app.route("/history")
+@login_required
 def history():
-    return "history"
+    return render_template("history.html", videos=current_user.watched_videos)
 
 
 @app.route("/statistics")
+@login_required
 def statistics():
-    return "statistics"
+    data = {}
+    watched_videos = current_user.watched_videos
+    data["total_videos"] = len(watched_videos)
+    data["total_words"] = sum(video.word_number for video in watched_videos)
+    from main import duration_to_min
+    data["total_time"] = sum(duration_to_min(video.duration) for video in watched_videos)
+    return render_template("statistics.html", data=data)
 
 
 @app.route('/<path:path>')

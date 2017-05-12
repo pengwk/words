@@ -22,6 +22,7 @@
 <!-- //fonts -->
     {% endblock %}
 </head>
+<body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -42,10 +43,10 @@
 			</div>
 			<div class="header-top-right">
 				<div class="file">
-					<a href="">{% block username %}{% endblock %}</a>
+					<a href="">{% block username %}{{ current_user.username }}{% endblock %}</a>
 				</div>
 				<div class="signin">
-					<a href="logout" class="play-icon popup-with-zoom-anim">退出</a>
+					<a href="user/sign-out" class="play-icon popup-with-zoom-anim">退出</a>
 				</div>
 				<div class="clearfix"> </div>
 			</div>
@@ -85,7 +86,7 @@
 					</div>
 				</div>
         </div>
-<body>
+
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         {% block content%} {% endblock %}
         <!-- footer -->
