@@ -34,27 +34,29 @@ __status__ = "BraveHeart"
 
 class ConfigClass(object):
     # Flask settings
-    SECRET_KEY =              os.getenv('SECRET_KEY',       'THIS IS AN INSECURE SECRET')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL',     'mysql+pymysql://root:nopassword@localhost/words_2?charset=utf8mb4')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'THIS IS AN INSECURE SECRET')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL',
+                                        'mysql+pymysql://root:nopassword@localhost/words_2?charset=utf8mb4')
     CSRF_ENABLED = True
 
     # Flask-Mail settings
-    MAIL_USERNAME =           os.getenv('MAIL_USERNAME',        'handsome_boy@pengwk.com')
-    MAIL_PASSWORD =           os.getenv('MAIL_PASSWORD',        'W#ER$RFS#RT*1d')
-    MAIL_DEFAULT_SENDER =     os.getenv('MAIL_DEFAULT_SENDER',  '"handsome_boy" <handsome_boy@pengwk.com>')
-    MAIL_SERVER =             os.getenv('MAIL_SERVER',          'smtp.exmail.qq.com')
-    MAIL_PORT =           int(os.getenv('MAIL_PORT',            '465'))
-    MAIL_USE_SSL =        int(os.getenv('MAIL_USE_SSL',         True))
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME', 'handsome_boy@pengwk.com')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', 'W#ER$RFS#RT*1d')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', '"handsome_boy" <handsome_boy@pengwk.com>')
+    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.exmail.qq.com')
+    MAIL_PORT = int(os.getenv('MAIL_PORT', '465'))
+    MAIL_USE_SSL = int(os.getenv('MAIL_USE_SSL', True))
     TEMPLATES_AUTO_RELOAD = os.getenv('TEMPLATES_AUTO_RELOAD', True)
 
     # Flask-User settings
-    USER_APP_NAME        = u"静听"                # Used by email templates
+    USER_APP_NAME = u"静听"  # Used by email templates
+
 
 app = Flask(__name__,
             static_url_path='/static',
             template_folder='./templates',
             )
-app.config.from_object(__name__+'.ConfigClass')
+app.config.from_object(__name__ + '.ConfigClass')
 mail = Mail(app)
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -74,6 +76,10 @@ video_tag_map_table = db.Table('video_tag_maps',
                                db.Column('video_tag_id', db.Integer, db.ForeignKey('video_tag.id'))
                                )
 
+video_user_map_table = db.Table('video_user_maps',
+                               db.Column('video_id', db.Integer, db.ForeignKey('video.id')),
+                               db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+                               )
 
 class Video(db.Model):
     __tablename__ = "video"
@@ -158,7 +164,7 @@ class Word(db.Model):
     __tablename__ = "word"
 
     id = db.Column(db.Integer, primary_key=True)
-    text= db.Column(db.String(30), unique=True)
+    text = db.Column(db.String(30), unique=True)
     phonetic = db.Column(db.String(30))
     base_form = db.Column(db.String(30))
     # times = db.Column(db.Integer)
@@ -225,11 +231,26 @@ class WatchRecord(db.Model):
     video_id = db.Column(db.Integer, db.ForeignKey("video.id"))
     video = db.relationship("Video", backref="video", uselist=False)
 
-# Define User DataModel
+
+class History(db.Model):
+    __tablename__ = "history"
+    id = db.Column(db.Integer, primary_key=True)
+    import datetime
+    watch_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    video_id = db.Column(db.Integer, db.ForeignKey("video.id"))
+    video = db.relationship("Video", backref="", uselist=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", backref="history", uselist=False)
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
 
-    # User email information
+    # User Authentication information
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False, default='')
+
+    # User Email information
     email = db.Column(db.String(255), nullable=False, unique=True)
     confirmed_at = db.Column(db.DateTime())
 
@@ -238,24 +259,19 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(50), nullable=False, default='')
     last_name = db.Column(db.String(50), nullable=False, default='')
 
+    watched_videos = db.relationship("Video",
+                            secondary=video_user_map_table,
+                            # you can also use the db.String name of the db.Table, "maps", as the secondary
+                            backref="users")
+
     def is_active(self):
       return self.is_enabled
 
-# Define UserAuth DataModel. Make sure to add flask_user UserMixin!!
-class UserAuth(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
 
-    # User authentication information
-    username = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(255), nullable=False, default='')
-
-    # Relationships
-    user = db.relationship('User', uselist=False, foreign_keys=user_id)
 
 
 # Setup Flask-User
-db_adapter = SQLAlchemyAdapter(db, User, UserAuthClass=UserAuth)
+db_adapter = SQLAlchemyAdapter(db, User)
 user_manager = UserManager(db_adapter, app)
 
 
@@ -263,6 +279,7 @@ def test_db():
     from database import get_or_create
     video, flag = get_or_create(db.session, Video, id=1)
     print video.video_id
+
 
 if __name__ == "__main__":
     db.create_all()

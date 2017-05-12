@@ -1,15 +1,64 @@
 {% extends "base.html" %}
 
-{% block title %} {% endblock %}
+{% block title %}统计信息{% endblock %}
 
-{% block head %} {% endblock %}
+{% block head %}
+{{ super() }}
+<link href="./../static/for_video/css/statistics_style.css" rel='stylesheet' type='text/css' media="all" />
+{% endblock %}
 
-{% block home_active %} {% endblock %}">
+{% block statistics_active %}active{% endblock %}
 
-{% block i_active %} {% endblock %}">
-
-{% block history_active %} {% endblock %}
-
-{% block statistics_active %} {% endblock %}
-
-{% block content %} {% endblock %}
+{% block content %}
+<div class="col-md-12">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="widget">
+                <div class="widget-content padding-25 bg-red-600">
+                  <div class="counter counter-lg">
+                    <span class="counter-number">{{ data.total_time }}</span>
+                    <div class="counter-label text-uppercase">总听力分钟数</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="widget">
+                <div class="widget-content padding-25 bg-yellow-200">
+                  <div class="counter counter-lg">
+                    <div class="counter-number-group">
+                      <span class="counter-number-related"></span>
+                      <span class="counter-number">{{ data.total_words }}</span>
+                    </div>
+                    <div class="counter-label text-uppercase">总单词数</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="widget">
+                <div class="widget-content padding-25 bg-blue-600">
+                  <div class="counter counter-lg counter-inverse">
+                    <div class="counter-label text-uppercase">总观看视频数</div>
+                    <span class="counter-number">{{ data.total_videos }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="widget">
+                <div class="widget-content padding-25 bg-purple-600">
+                  <div class="counter counter-lg counter-inverse">
+                    <div class="counter-label text-uppercase"></div>
+                    <div class="counter-number-group">
+                      <span class="counter-number-related"></span>
+                      <span class="counter-number">真棒！</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix visible-lg-block"></div>
+{% endblock %}
