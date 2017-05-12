@@ -16,7 +16,12 @@ __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
-# 在
+# 登录进机器
+
+
+# 添加用户
+
+#
 
 # machine login
 #   生成密钥

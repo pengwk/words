@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- bootstrap -->
+<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' media="all" />
+<!-- //bootstrap -->
+<link href="css/dashboard.css" rel="stylesheet">
+<!-- Custom Theme files -->
+<link href="css/style.css" rel='stylesheet' type='text/css' media="all" />
+<script src="js/jquery-1.11.1.min.js"></script>
+<!--start-smoth-scrolling-->
+<!-- fonts -->
+<!--<link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>-->
+<!--<link href='//fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>-->
+<!-- //fonts -->
+</head>
+  <body>
+
+ <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html"><h1><img src="images/logo.png" alt="" /></h1></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+			<div class="top-search">
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="搜索...">
+					<input type="submit" value=" ">
+				</form>
+			</div>
+			<div class="header-top-right">
+				<div class="file">
+					<a href="">{{username}}</a>
+				</div>
+				<div class="signin">
+					<a href="logout" class="play-icon popup-with-zoom-anim">退出</a>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+        </div>
+		<div class="clearfix"> </div>
+      </div>
+    </nav>
+
+	
+        <div class="col-sm-3 col-md-2 sidebar">
+			<div class="top-navigation">
+				<div class="t-menu">菜单</div>
+				<div class="t-img">
+					<img src="images/lines.png" alt="" />
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+				<div class="drop-navigation drop-navigation">
+				  <ul class="nav nav-sidebar">
+					<li class="active"><a href="index.html" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>视频中心</a></li>
+					<li><a href="shows.html" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>个人中心</a></li>
+					<li><a href="history.html" class="sub-icon"><span class="glyphicon glyphicon-home glyphicon-hourglass" aria-hidden="true"></span>观看记录</a></li>
+					<li><a href="history.html" class="sub-icon"><span class="glyphicon glyphicon-home glyphicon-hourglass" aria-hidden="true"></span>统计信息</a></li>
+				  </ul>
+				  <!-- script-for-menu -->
+						<script>
+							$( ".top-navigation" ).click(function() {
+							$( ".drop-navigation" ).slideToggle( 300, function() {
+							// Animation complete.
+							});
+							});
+						</script>
+					<div class="side-bottom">
+						<div class="copyright">
+							<p>Copyright © 2017 兰宁儿. All Rights Reserved</p>
+						</div>
+					</div>
+				</div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+			<div class="main-grids">
+				<div class="top-grids">
+					<div class="recommended-info">
+						<h3>为你推荐</h3>
+					</div>
+					<!--template for 3 videos item show-->
+					{% for video in recommend_videos[0:3] %}
+					<div class="col-md-4 resent-grid recommended-grid slider-top-grids">
+						<div class="resent-grid-img recommended-grid-img">
+							<a href="watch?v={{ video.video_id }}"><img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" /></a>
+							<div class="time">
+								<p>{{ video.duration[2:] }}</p>
+							</div>
+							<div class="clck">
+								<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+							</div>
+						</div>
+						<div class="resent-grid-info recommended-grid-info">
+							<h3><a href="" class="title title-info">{{video.title}}</a></h3>
+							<ul>
+								<li><p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p></li>
+								<li class="right-list"><p class="views views-info">{{ video.view_count }} views</p></li>
+							</ul>
+						</div>
+					</div>
+					{% endfor %}
+
+					<div class="clearfix"> </div>
+				</div>
+				<div class="recommended">
+					<div class="recommended-grids">
+						<div class="recommended-info">
+							<h3>{{channel_title}}</h3>
+						</div>
+						<script src="js/responsiveslides.min.js"></script>
+						 <script>
+							// You can also use "$(window).load(function() {"
+							$(function () {
+							  // Slideshow 4
+							  $("#slider3").responsiveSlides({
+								auto: true,
+								pager: false,
+								nav: true,
+								speed: 500,
+								namespace: "callbacks",
+								before: function () {
+								  $('.events').append("<li>before event fired.</li>");
+								},
+								after: function () {
+								  $('.events').append("<li>after event fired.</li>");
+								}
+							  });
+						
+							});
+						  </script>
+						<div  id="top" class="callbacks_container">
+							<ul class="rslides" id="slider3">
+								<!--repeat 3 times 3 li-->
+
+								<li>
+									<div class="animated-grids">
+                                        {% for video in slides_videos[0:4] %}
+										<div class="col-md-3 resent-grid recommended-grid slider-first">
+											<div class="resent-grid-img recommended-grid-img">
+												<a href="watch?v={{ video.video_id }}">
+                                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                                </a>
+												<div class="time small-time slider-time">
+													<p>{{ video.duration[2:] }}</p>
+												</div>
+												<div class="clck small-clck">
+													<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+												</div>
+											</div>
+											<div class="resent-grid-info recommended-grid-info">
+												<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+												<div class="slid-bottom-grids">
+													<div class="slid-bottom-grid">
+														<p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p>
+													</div>
+													<div class="slid-bottom-grid slid-bottom-right">
+														<p class="views views-info">2,114,200 views</p>
+													</div>
+													<div class="clearfix"> </div>
+												</div>
+											</div>
+										</div>
+										{% endfor %}
+										<div class="clearfix"> </div>
+									</div>
+								</li>
+
+
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!--repeat 2 times-->
+				<div class="recommended">
+					<div class="recommended-grids">
+						<div class="recommended-info">
+							<h3>channel_title</h3>
+						</div>
+                        {% for video in bottom_videos[0:4] %}
+						<div class="col-md-3 resent-grid recommended-grid">
+							<div class="resent-grid-img recommended-grid-img">
+								<a href="watch?v={{ video.video_id }}">
+                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                </a>
+								<div class="time small-time">
+									<p>{{ video.duration[2:] }}</p>
+								</div>
+								<div class="clck small-clck">
+									<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+								</div>
+							</div>
+							<div class="resent-grid-info recommended-grid-info video-info-grid">
+								<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+								<ul>
+									<li><p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p></li>
+									<li class="right-list"><p class="views views-info">{{ video.view_count }} views</p></li>
+								</ul>
+							</div>
+						</div>
+                        {% endfor %}
+						<div class="clearfix"> </div>
+					</div>
+					<div class="recommended-grids">
+                        {% for video in bottom_videos[4:8] %}
+						<div class="col-md-3 resent-grid recommended-grid">
+							<div class="resent-grid-img recommended-grid-img">
+								<a href="watch?v={{ video.video_id }}">
+                                    <img src="https://i.ytimg.com/vi/{{ video.video_id }}/sddefault.jpg" alt="" />
+                                </a>
+								<div class="time small-time">
+									<p>2:34</p>
+								</div>
+								<div class="clck small-clck">
+									<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+								</div>
+							</div>
+							<div class="resent-grid-info recommended-grid-info video-info-grid">
+								<h5><a href="watch?v={{ video.video_id }}" class="title">{{ video.title }}</a></h5>
+								<ul>
+									<li><p class="author author-info"><a href="#" class="author">{{ video._channel_title }}</a></p></li>
+									<li class="right-list"><p class="views views-info">{{ video.view_count }} views</p></li>
+								</ul>
+							</div>
+						</div>
+                        {% endfor %}
+						<div class="clearfix"> </div>
+					</div>
+				</div>
+			</div>
+			<!-- footer -->
+			<div class="footer">
+				<div class="footer-grids">
+					<div class="footer-top">
+						<div class="footer-top-nav">
+							<ul>
+								<li><a href="about.html">About</a></li>
+								<li><a href="press.html">Press</a></li>
+								<li><a href="copyright.html">Copyright</a></li>
+								<li><a href="creators.html">Creators</a></li>
+								<li><a href="#">Advertise</a></li>
+								<li><a href="developers.html">Developers</a></li>
+							</ul>
+						</div>
+						<div class="footer-bottom-nav">
+							<ul>
+								<li><a href="terms.html">Terms</a></li>
+								<li><a href="privacy.html">Privacy</a></li>
+								<li><a href="#small-dialog4" class="play-icon popup-with-zoom-anim">Send feedback</a></li>
+								<li><a href="privacy.html">Policy & Safety </a></li>
+								<li><a href="try.html">Try something new!</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="footer-bottom">
+
+					</div>
+				</div>
+			</div>
+			<!-- //footer -->
+		</div>
+		<div class="clearfix"> </div>
+	<div class="drop-menu">
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu4">
+		  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Regular link</a></li>
+		  <li role="presentation" class="disabled"><a role="menuitem" tabindex="-1" href="#">Disabled link</a></li>
+		  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another link</a></li>
+		</ul>
+	</div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+  </body>
+</html>
