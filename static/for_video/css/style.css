@@ -1767,9 +1767,9 @@ background: url(../images/social.png) no-repeat 0px 0px;
 }
 .copyright p{
     color: #BBBBBB;
-    margin: 0;
+    margin: auto;
     font-size: 13px;
-    text-align: center;
+    /*text-align: center;*/
 }
 .copyright p a{
 	color:#BBBBBB;

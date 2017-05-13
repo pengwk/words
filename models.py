@@ -49,7 +49,7 @@ class ConfigClass(object):
     TEMPLATES_AUTO_RELOAD = os.getenv('TEMPLATES_AUTO_RELOAD', True)
 
     # Flask-User settings
-    USER_APP_NAME = u"静听"  # Used by email templates
+    USER_APP_NAME = u"镜听"  # Used by email templates
 
 
 app = Flask(__name__,
