@@ -39,10 +39,69 @@ var _hmt = _hmt || [];
 })();
     </script>
 
+    <style>
+
+.carousel,
+.item,
+.active {
+    height: 100%;
+}
+
+.carousel-inner {
+    height: 100%;
+}
+
+/* Background images are set within the HTML using inline CSS, not here */
+
+.fill {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+    </style>
+
   </head>
 
   <body>
+        <!-- Full Page Image Background Carousel Header -->
+    <header id="myCarousel" class="carousel slide">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1"></li>
+        </ol>
 
+        <!-- Wrapper for Slides -->
+        <div class="carousel-inner">
+            <div class="item active">
+                <!-- Set the first background image using inline CSS below. -->
+                <div class="fill" style="background-image:url('/static/images/statistics.png');"></div>
+                <div class="carousel-caption">
+                    <h2>有数据 不盲目</h2>
+                </div>
+            </div>
+            <div class="item">
+                <!-- Set the second background image using inline CSS below. -->
+                <div class="fill" style="background-image:url('http://www.wallpaperawesome.com/wallpapers-awesome/wallpapers-full-hd-1920-1080-widescreen-awesome/wallpaper-full-hd-1920-1080-widescreen-awesome-217.jpg');"></div>
+                <div class="carousel-caption">
+                    <h2>有兴趣 不放弃</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="icon-prev"></span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="icon-next"></span>
+        </a>
+
+    </header>
     <div class="site-wrapper">
 
       <div class="site-wrapper-inner">
@@ -55,21 +114,12 @@ var _hmt = _hmt || [];
               <nav>
                 <ul class="nav masthead-nav">
                   <li class="active"><a href="#">首页</a></li>
-                  <li><a href="#">功能</a></li>
-                  <li><a href="#">联系我们</a></li>
+                  <li><a href="/user/sign-in?next=/home">登录</a></li>
+                  <li><a href="mailto:pengwk@pengwk.com">联系我们</a></li>
                 </ul>
               </nav>
             </div>
           </div>
-
-          <div class="inner cover">
-            <h1 class="cover-heading">听见  看得见</h1>
-            <p class="lead">看得到点点滴滴</p>
-            <p class="lead">
-              <a href="home" class="btn btn-lg btn-default">立即体验</a>
-            </p>
-          </div>
-
           <div class="mastfoot">
             <div class="inner">
               <p>Copyright © 镜听 | 粤ICP备15099878号</p>
@@ -81,6 +131,12 @@ var _hmt = _hmt || [];
       </div>
 
     </div>
+    <!-- Script to Activate the Carousel -->
+    <script>
+    $('.carousel').carousel({
+        interval: 5000 //changes the speed
+    })
+    </script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
