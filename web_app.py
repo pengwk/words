@@ -25,6 +25,7 @@ from models import Video, db, History
 
 @app.route("/")
 def hello():
+    print current_user.get_id()
     return app.send_static_file('cover/index.html')
 
 
@@ -101,6 +102,6 @@ def send_js(path):
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=80)
 
     
