@@ -11,9 +11,9 @@
 <!-- bootstrap -->
 <link href="./../static/for_video/css/bootstrap.min.css" rel='stylesheet' type='text/css' media="all" />
 <!-- //bootstrap -->
-<link href="./../static/for_video/css/dashboard.css" rel="stylesheet">
+<!--<link href="./../static/for_video/css/dashboard.css" rel="stylesheet">-->
 <!-- Custom Theme files -->
-<link href="./../static/for_video/css/style.css" rel='stylesheet' type='text/css' media="all" />
+<!--<link href="./../static/for_video/css/style.css" rel='stylesheet' type='text/css' media="all" />-->
 <script src="./../static/for_video/js/jquery-1.11.1.min.js"></script>
 <!--start-smoth-scrolling-->
 <!-- fonts -->
@@ -23,6 +23,7 @@
     {% endblock %}
 </head>
 <body>
+{% block nav %}
 <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -36,21 +37,17 @@
         </div>
 		<div class="clearfix"> </div>
       </div>
-    </nav>
+</nav>
+{% endblock %}
+
 {# {% block %} {% endblock %} #}
 
 
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
         {% block content%} {% endblock %}
-    </div>
-    <div class="clearfix"> </div>
-	<div class="drop-menu">
-		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu4">
-		  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Regular link</a></li>
-		  <li role="presentation" class="disabled"><a role="menuitem" tabindex="-1" href="#">Disabled link</a></li>
-		  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another link</a></li>
-		</ul>
-	</div>
+    <!--</div>-->
+
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
