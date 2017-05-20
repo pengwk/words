@@ -26,7 +26,7 @@ from models import Video, db, History
 @app.route("/")
 def hello():
     print current_user.get_id()
-    return app.send_static_file('cover/index.html')
+    return render_template('index.html')
 
 
 from flask import render_template
