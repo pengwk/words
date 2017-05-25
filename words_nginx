@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name pengwk.com;
+    server_name pengwk.com www.pengwk.com;
 
     location / {
         include         uwsgi_params;

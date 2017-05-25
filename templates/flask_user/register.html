@@ -1,46 +1,54 @@
-{% extends 'flask_user/public_base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>注册{{ config.USER_APP_NAME }}</title>
+<!-- for-mobile-apps -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<!-- //for-mobile-apps -->
+<!-- <link href='//fonts.googleapis.com/css?family=Lato:400,100,100italic,300italic,300,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'> -->
+<!-- <link href='//fonts.googleapis.com/css?family=Amaranth:400,400italic,700,700italic' rel='stylesheet' type='text/css'> -->
+<link href="./../static/register/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3bcada98290d03aedc870f293e8a4a35";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+	</script>
+</head>
+<body>
+    <div class="content">
+		<h1>{{ config.USER_APP_NAME }}</h1>
+		<div class="main">
+			<h2>一个免费账号</h2>
 
 {% block content %}
 {% from "flask_user/_macros.html" import render_field, render_submit_field %}
-<h1>{%trans%}Register{%endtrans%}</h1>
 
 <form action="" method="POST" novalidate formnovalidate class="form" role="form">
     {{ form.hidden_tag() }}
 
     {# Username or Email #}
-    {% set field = form.username if user_manager.enable_username else form.email %}
-    <div class="form-group {% if field.errors %}has-error{% endif %}">
-        {# Label on left, "Already registered? Sign in." on right #}
-        <div class="row">
-            <div class="col-xs-6">
-                <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
-            </div>
-            <div class="col-xs-6 text-right">
-                {% if user_manager.enable_register %}
-                    <a href="{{ url_for('user.login') }}" tabindex='290'>
-                        {%trans%}Already registered? Sign in.{%endtrans%}</a>
-                {% endif %}
-            </div>
-        </div>
-        {{ field(class_='form-control', tabindex=210) }}
-        {% if field.errors %}
-            {% for e in field.errors %}
-                <p class="help-block">{{ e }}</p>
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    {% if user_manager.enable_email and user_manager.enable_username %}
-        {{ render_field(form.email, tabindex=220) }}
-    {% endif %}
-
-    {{ render_field(form.password, tabindex=230) }}
-
-    {% if user_manager.enable_retype_password %}
-        {{ render_field(form.retype_password, tabindex=240) }}
-    {% endif %}
-
-    {{ render_submit_field(form.submit, tabindex=280) }}
+    <h5>用户名</h5>
+    <input id="username" name="username" type="text" value="Type here" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Type here';}" required="">
+    <h5>Email</h5>
+	<input id="email" name="email" type="text" value="your@email.com" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'your@email.com';}" required="">
+	<h5>密码</h5>
+	<input id="password" name="password" type="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" required="">
+	<h5>确认密码</h5>
+	<input id="retype_password" name="retype_password" type="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" required="">
+	<input type="submit" value="加入">
 </form>
 
 {% endblock %}
+
+        </div>
+		<p class="footer">&copy; {{ config.NOW.year }} {{ config.USER_APP_NAME }} All Rights Reserved</p>
+	</div>
+</body>
+</html>

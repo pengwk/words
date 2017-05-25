@@ -20,16 +20,14 @@ __status__ = "BraveHeart"
 
 # set the project root directory as the static folder, you can set others.
 from models import app, User
-
 from models import Video, db, History
+from flask import render_template
+
 
 @app.route("/")
 def hello():
     print current_user.get_id()
     return render_template('index.html')
-
-
-from flask import render_template
 
 
 @app.route("/home")
@@ -104,4 +102,4 @@ if __name__ == "__main__":
     app.debug = True
     app.run(host='0.0.0.0')
 
-    
+
