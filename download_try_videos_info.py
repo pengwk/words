@@ -41,9 +41,11 @@ def download_video(video_id):
         ydl.download(['http://www.youtube.com/watch?v={}'.format(video_id)])
 
 if __name__ == '__main__':
+    import os
     from youtube import get_uploads_list_id, get_playlist_items
     from transcript import get_clean_transcript, download_transcript
 
+    os.chdir('./static/try_resource')
     # Seeker
     channel_id = 'UCzWQYUVCpZqtN93H8RR44Qw'
     upload_list_id = get_uploads_list_id(channel_id)

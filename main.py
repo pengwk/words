@@ -412,10 +412,6 @@ def video_first_policy():
     process_pool(statistics_for_cet_six, video_list, 4)
 
 
-
-
-
-
 def id_to_db(video_id):
     from models import Video, db
     if db.session.query(Video).filter_by(video_id=video_id).count() == 0:
@@ -433,7 +429,6 @@ def download_video():
     # 存入数据库
     thread_pool(id_to_db, video_ids, 5)
     return None
-
 
 
 if __name__ == '__main__':

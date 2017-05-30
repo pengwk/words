@@ -21,7 +21,7 @@ __status__ = "BraveHeart"
 
 def download_transcript(video_id, lang="en"):
     """
-    视频没有字幕时，返回
+    视频没有字幕时，返回“”
     """
     # 查看transcript_list
     # 有英文字幕时，下载
