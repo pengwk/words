@@ -58,7 +58,7 @@ if __name__ == '__main__':
         if _transcript == '':
             continue
         else:
-            with open("".join([video_id, '.txt'])) as f:
+            with open("".join([video_id, '.txt']), "w") as f:
                 f.write(get_clean_transcript(_transcript))
             download_img(video_id)
             crop_image_black(video_id)
