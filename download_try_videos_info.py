@@ -61,7 +61,7 @@ if __name__ == '__main__':
             with open("".join([video_id, '.txt']), "w") as f:
                 f.write(get_clean_transcript(_transcript).encode('utf8'))
             download_img(video_id)
-            crop_image_black(video_id)
+            crop_image_black(''.join([video_id, '.jpg']))
             download_video(video_id)
             counter += 1
 
