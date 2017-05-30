@@ -11,13 +11,14 @@ def crop_image_black(image):
     black = (0, 0, 0)
     #
     for h in xrange(_image.height):
-        if _image.getpixel((10, h)) != black:
+        if _image.getpixel((100, h)) != black:
             top = h
             break
     for h in xrange(_image.height-1, 0, -1):
-        if _image.getpixel((10, h)) != black:
+        if _image.getpixel((100, h)) != black:
             bottom = h
             break
+    top, bottom = 60, 419
     size = (0, top, _image.width, bottom)
     _image.crop(size).save(image)
     return None
