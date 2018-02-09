@@ -8,3 +8,10 @@
 cd web
 python web_app.py
 ```
+
+## 配置
+
+### 邮件
+
+### 数据库
+
