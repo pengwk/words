@@ -104,10 +104,96 @@ def search_channels(max_channel_count):
     return [channel.get("id").get("channelId") for channel in channel_list]
 
 
-def search_videos(max_video_count):
-    """
-    200M内存可以装44500个id
-    :return: a list such as ["ididi", "idididid"]
+def search_videos(q, max_video_count):
+    """搜索YouTube内容返回搜索结果
+    配额： A call to this method has a quota cost of 100 units.
+    https://developers.google.com/youtube/v3/docs/search/list
+    请求参数：
+        必须参数：
+            - part：指定搜索结果中包含的东西
+                + sinppet
+                + id
+
+        过滤器：
+            - forContentOwenr
+            - forDeveloper
+            - forMine
+            - relatedToVideoId
+        可选参数：
+            - channelId
+            - channelType
+                + any
+                + show
+            - eventType
+                + completed
+                + live
+                + upcoming
+            - location
+            - locationRadius
+            - maxResults
+                + 0-50(默认是5)
+            - onBehalfOfContentOwner
+            - order
+                + date
+                + rating
+                + relevance
+                + title
+                + videoCount
+                + viewCount
+            - pageToken
+            - publishedAfter
+                + The value is an RFC 3339 formatted date-time value (1970-01-01T00:00:00Z).
+            - publishedBefore
+                + The value is an RFC 3339 formatted date-time value (1970-01-01T00:00:00Z).
+            - q
+                + 可以使用布尔运算符NOT（-）和OR（|）,url需要转义
+                + 例子 boating|sailing -fishing
+            - regionCode
+            - relevanceLanguage
+            - safeSearch
+                + moderate 默认值
+                + strict 过滤掉所有限制级内容
+                + none 不过滤
+            - topicId
+            - type
+                + channel 只需要频道结果
+                + playlist 只需要播放列表结果
+                + video 只需要视频
+                + 默认值以上三个
+            - videoCaption
+                + any
+                + closedCaption 只包含有字幕的视频
+                + none 只包含没有字幕的视频
+            - videoCategoryId
+            - videoDefinition
+                + any
+                + high
+                + standard
+            - videoDimension
+                + 2d
+                + 3d
+                + any
+            - videoDuration
+                + any 默认值
+                + long 超过20分钟的
+                + medium 4-20分钟的
+                + short 低于4分钟的
+            - videoEmbeddable
+                + any
+                + true
+            - videoLicense
+                + any
+                + creativeCommon
+                + youtube
+            - videoSyndicated
+                + any
+                + true
+            - videoType
+                + any
+                + episode
+                + movie
+            
+    :return: a list such as ["video_id_1", "video_id_2"]
 
     result.json() 的结构
     {u'etag': u'"m2yskBQFythfE4irbTIeOgYYfBU/ZNdWTsc0Ju8PukbfXV3eGecnklA"',
@@ -134,8 +220,10 @@ def search_videos(max_video_count):
     search_url = "https://www.googleapis.com/youtube/v3/search"
     commond_params = {"key": DEVELOPER_KEY,
                       "part": part,
+                      'q': q,
                       "videoCaption": "closedCaption",
                       "maxResults": 50,
+                      'videoDuration': 'short',
                       "type": "video",
                       "relevanceLanguage": "en",
                       "safeSearch": "strict",
@@ -168,10 +256,6 @@ def search_videos(max_video_count):
                               verify=False, )
         _json = result.json()
     return [item.get("id").get("videoId") for item in video_list]
-
-
-def test_search_videos():
-    pprint(search_videos(200))
 
 
 def get_channel_details(channel_id):

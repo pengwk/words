@@ -24,8 +24,9 @@ from models import Video, db, History
 from flask import render_template
 
 
-# import bug2butterfly
+import bug2butterfly
 
+raise IOError('Hi')
 
 @app.route("/")
 def hello():

@@ -24,15 +24,15 @@ def download_transcript(video_id, lang="en"):
     视频没有字幕时，返回“”
     """
     # 查看transcript_list
-    # 有英文字幕时，下载
+    # 有对应语言字幕时，下载
     import requests
     from bs4 import BeautifulSoup
     _result = requests.get('https://video.google.com/timedtext?hl=en&type=list&v={}'.format(video_id))
     _soup = BeautifulSoup(_result.content, "lxml")
-    _en_track = _soup.find_all(lang_code="en")
-    if not _en_track:
+    _lang_track = _soup.find_all(lang_code=lang)
+    if not _lang_track:
         return ""
-    _name = _en_track[0]["name"]
+    _name = _lang_track[0]["name"]
     _raw_response = requests.get("http://video.google.com/timedtext",
                                  params={"lang": lang,
                                          "v": video_id,
