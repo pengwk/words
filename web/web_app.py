@@ -23,11 +23,6 @@ from models import app, User
 from models import Video, db, History
 from flask import render_template
 
-
-import bug2butterfly
-
-raise IOError('Hi')
-
 @app.route("/")
 def hello():
     print current_user
