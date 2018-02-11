@@ -9,6 +9,9 @@
 from flask import request, send_from_directory
 from flask_user import login_required, current_user
 
+# mail and MySQL configuration
+import secret_config
+
 # set the project root directory as the static folder, you can set others.
 from models import app
 from models import Video, db, History
@@ -26,8 +29,6 @@ __status__ = "BraveHeart"
 
 @app.route("/")
 def hello():
-    print current_user
-    print current_user.is_anonymous
     return render_template('index.html')
 
 

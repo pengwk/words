@@ -11,17 +11,14 @@
     alembic revision --autogenerate -m "Added account db.Table"
     alembic upgrade head
 """
+import os
 from datetime import datetime
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.mysql import LONGTEXT
-
-import os
-from flask import Flask, render_template_string
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
-from flask_user import login_required, UserManager, UserMixin, SQLAlchemyAdapter
+from sqlalchemy.dialects.mysql import LONGTEXT
+from flask_user import UserManager, UserMixin, SQLAlchemyAdapter
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
@@ -269,21 +266,12 @@ class User(db.Model, UserMixin):
                             backref="users")
 
     def is_active(self):
-      return self.is_enabled
-
-
+        return self.is_enabled
 
 
 # Setup Flask-User
 db_adapter = SQLAlchemyAdapter(db, User)
 user_manager = UserManager(db_adapter, app)
-
-
-def test_db():
-    from database import get_or_create
-    video, flag = get_or_create(db.session, Video, id=1)
-    print video.video_id
-
 
 if __name__ == "__main__":
     db.create_all()
