@@ -6,8 +6,13 @@
     Date last modified: 4/25/2016
     Python Version: 2.7.10
 """
-from flask import Flask, request, send_from_directory
-from flask_user import login_required, UserManager, UserMixin, SQLAlchemyAdapter, current_user
+from flask import request, send_from_directory
+from flask_user import login_required, current_user
+
+# set the project root directory as the static folder, you can set others.
+from models import app
+from models import Video, db, History
+from flask import render_template
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
@@ -18,10 +23,6 @@ __maintainer__ = "pengwk"
 __email__ = "pengwk2@gmail.com"
 __status__ = "BraveHeart"
 
-# set the project root directory as the static folder, you can set others.
-from models import app, User
-from models import Video, db, History
-from flask import render_template
 
 @app.route("/")
 def hello():
