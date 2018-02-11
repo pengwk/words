@@ -6,16 +6,15 @@
     Date last modified: 4/25/2016
     Python Version: 2.7.10
 """
+from flask import render_template
 from flask import request, send_from_directory
 from flask_user import login_required, current_user
 
-# mail and MySQL configuration
+# Mail and MySQL configuration
 import secret_config
 
-# set the project root directory as the static folder, you can set others.
-from models import app
 from models import Video, db, History
-from flask import render_template
+from models import app
 
 __author__ = "pengwk"
 __copyright__ = "Copyright 2016, pengwk"
